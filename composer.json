@@ -14,11 +14,12 @@
         }
     ],
     "config": {
-        "process-timeout": 0,
+        "process-timeout": 1800,
         "vendor-dir": "vendor"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "3.*"
+        "squizlabs/php_codesniffer": "3.*",
+        "phpunit/phpunit": "^9"
     },
     "require": {
         "guzzlehttp/guzzle": "^6.2",
@@ -26,14 +27,14 @@
         "firebase/php-jwt": "^3.0",
         "vlucas/phpdotenv": "^4.1"
     },
-    "autoload": {
-        "psr-4": {
-            "Mirage\\": "src/"
-        }
-    },
     "scripts": {
         "test": "phpunit",
         "cs": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src",
         "fs": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mirage\\": "src/"
+        }
     }
 }
