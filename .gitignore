@@ -1,2 +1,6 @@
+.idea
+.vscode
+composer.lock
 /cache/
 /config/development/
+/vendor/
