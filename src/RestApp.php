@@ -199,7 +199,9 @@ class RestApp extends \Phalcon\Mvc\Micro
             return true;
         };
 
-        $this->before(fn () => true);
+        $this->before(function () {
+            return true;
+        });
 
         $this->after(function () {
             $this->getReturnedValue()->sendResponse();
