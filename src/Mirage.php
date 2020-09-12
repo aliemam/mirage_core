@@ -268,10 +268,10 @@ class Mirage
             define('VENDOR_DIR', MIRAGE_APP_DIR . '/vendor');
         }
         if (!defined('MIRAGE_DIR')) {
-            if (!is_readable(VENDOR_DIR . '/aliem/mirage/src')) {
+            if (!is_readable(VENDOR_DIR . '/aliemam/mirage/src')) {
                 throw new ErrorException('[ERROR][100] Unable to define MIRAGE_DIR');
             }
-            define('MIRAGE_DIR', VENDOR_DIR . '/aliem/mirage/src');
+            define('MIRAGE_DIR', VENDOR_DIR . '/aliemam/mirage/src');
         }
 
         define('ENV_VAR_LOADED', true);
