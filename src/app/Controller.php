@@ -44,7 +44,7 @@ class Controller extends \Phalcon\Mvc\Controller
      *
      * @return void
      */
-    public function __destruct(): void
+    public function __destruct()
     {
         foreach ($this as &$value) {
             $value = null;

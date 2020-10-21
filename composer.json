@@ -1,41 +1,42 @@
 {
-    "name": "aliemam/mirage_core",
-    "type": "framework",
-    "description": "Mirage Core FrameWork",
-    "keywords": [
-        "mirage",
-        "framework"
-    ],
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Ali Emamhadi",
-            "email": "aliemamhadi@gmail.com"
-        }
-    ],
-    "config": {
-        "process-timeout": 1800,
-        "vendor-dir": "vendor"
-    },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "3.*",
-        "phpunit/phpunit": "^9"
-    },
-    "require": {
-        "php": "^7.2",
-        "guzzlehttp/guzzle": "^6.2",
-        "psr/log": "^1.0",
-        "firebase/php-jwt": "^3.0",
-        "vlucas/phpdotenv": "^4.1"
-    },
-    "scripts": {
-        "test": "phpunit",
-        "cs": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src",
-        "fs": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
-    },
-    "autoload": {
-        "psr-4": {
-            "Mirage\\": "src/"
-        }
+  "name": "aliemam/mirage_core",
+  "type": "framework",
+  "description": "Mirage Core FrameWork",
+  "keywords": [
+    "mirage",
+    "framework"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Ali Emamhadi",
+      "email": "aliemamhadi@gmail.com"
     }
+  ],
+  "config": {
+    "process-timeout": 1800,
+    "vendor-dir": "vendor"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "3.*",
+    "phpunit/phpunit": "^9"
+  },
+  "require": {
+    "php": "^7.4",
+    "guzzlehttp/guzzle": "^6.2",
+    "psr/log": "^1.0",
+    "firebase/php-jwt": "^3.0",
+    "vlucas/phpdotenv": "^4.1",
+    "ext-json": "*"
+  },
+  "scripts": {
+    "test": "phpunit",
+    "cs": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src",
+    "fs": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mirage\\": "src/"
+    }
+  }
 }

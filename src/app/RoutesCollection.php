@@ -24,16 +24,18 @@
 
 namespace Mirage\App;
 
+use ErrorException;
 use Mirage\Libs\Middleware;
 use Mirage\Libs\Route;
+use phpDocumentor\Plugin\Scrybe\Converter\ToHtmlInterface;
 
 /**
  * Class RoutesCollection
  * @package Mirage
  */
-
 class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
 {
+    public bool $enabled = true;
     private string $collection_handler;
     private string $collection_prefix;
     private array $collection_routes;
@@ -42,14 +44,14 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     public static function boot(): void
     {
         $called_class = get_called_class();
-        $collection =  new $called_class();
+        $collection = new $called_class();
         $collection->setlazy(false);
         $collection_prefix = $collection->getCollectionPrefix();
         $collection_handler = $collection->getCollectionHandler();
         $collection_routes = $collection->getCollectionRoutes();
         if (!isset($collection_prefix)) {
             throw new ErrorException("[ERROR][100] Collection with no prefix has error: 
-                prefix should be defined.");
+            prefix should be defined.");
         }
         if (!isset($collection_handler)) {
             throw new ErrorException("[ERROR][100] Collection with prefix $collection_prefix has error: 
@@ -129,9 +131,10 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     /**
      * Set the value of collection_handler
      *
-     * @return  self
+     * @param Controller $collection_handler
+     * @return $this
      */
-    protected function setCollectionHandler($collection_handler): self
+    protected function setCollectionHandler(Controller $collection_handler): self
     {
         $this->collection_handler = $collection_handler;
         $this->setHandler($collection_handler);
@@ -152,9 +155,10 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     /**
      * Set the value of collection_prefix
      *
-     * @return  self
+     * @param string $collection_prefix
+     * @return $this
      */
-    public function setCollectionPrefix($collection_prefix): self
+    public function setCollectionPrefix(string $collection_prefix): self
     {
         $this->collection_prefix = $collection_prefix;
         $this->setPrefix($collection_prefix);
@@ -175,9 +179,10 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     /**
      * Set the value of collection_routes
      *
-     * @return  self
+     * @param array $collection_routes
+     * @return $this
      */
-    public function setCollectionRoutes($collection_routes): self
+    public function setCollectionRoutes(array $collection_routes): self
     {
         $this->collection_routes = $collection_routes;
 
@@ -195,9 +200,27 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     }
 
     /**
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
      * Default Mirage Framework Collection
      *
-     * @return void
+     * @return RoutesCollection
      */
     public static function healthCheckCollection()
     {

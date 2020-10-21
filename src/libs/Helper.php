@@ -48,7 +48,7 @@ class Helper
      * @param $ip
      * @return bool
      */
-    public static function validateIp($ip): bool
+    public static function validateIp(string $ip): bool
     {
         if (strtolower($ip) === 'unknown') {
             return false;
@@ -155,7 +155,7 @@ class Helper
      * @param $key
      * @return string
      */
-    public static function getHeader($key): string
+    public static function getHeader(string $key): string
     {
         $headers = self::getHeaders();
         return (isset($headers[strtolower($key)]) ? $headers[strtolower($key)] : null);
@@ -177,7 +177,7 @@ class Helper
      * @param $str
      * @return string
      */
-    public static function jsonErrorMsg($str): string
+    public static function jsonErrorMsg(string $str): string
     {
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
@@ -270,5 +270,61 @@ class Helper
             $res .= ucfirst($word);
         }
         return lcfirst($res);
+    }
+
+    /**
+     * This function redirect client to other pages.
+     * NOTE: $terminate_request = true, works if this script was ran by fast-cgi engine
+     *
+     * @param string $url
+     * @param boolean $terminate_request
+     * @return void
+     */
+    public static function redirect(string $url, bool $terminate_request = true)
+    {
+        ignore_user_abort(true);
+        set_time_limit(10);
+        L::d("System Redirect to : $url");
+        header('Location: ' . $url);
+        header('Connection: close');
+        echo "<meta http-equiv='refresh' content='0; url={$url}' />";
+        echo "<script>window.location.href = '{$url}';</script>";
+        if ($terminate_request) {
+            L::d("Terminate request connection");
+            exit(0);
+        } else {
+            fastcgi_finish_request();
+            L::d("continue the script...");
+        }
+    }
+
+    /**
+     * Get value by passing keys in host environment variables.
+     * if it was not exist $default_value was returned.
+     *
+     * @param string $key
+     * @param string $default_value
+     * @return void
+     */
+    public static function env(string $key, string $default_value = null)
+    {
+        $env_value = $_ENV[$key];
+        if ($env_value !== false) {
+
+            if (isset($env_value[0])) {
+                if ($env_value[0] == '[' && $env_value[strlen($env_value) - 1] == ']') {
+                    $new_env_value = str_replace(['[', ']', "'"], '', $env_value);
+                    $env_value = explode(',', $new_env_value);
+                    return $env_value;
+                }
+            }
+
+            if (strtolower($env_value) === "true" || strtolower($env_value) === "false") {
+                return (strtolower($env_value) === "true");
+            }
+
+            return $env_value;
+        }
+        return $default_value;
     }
 }

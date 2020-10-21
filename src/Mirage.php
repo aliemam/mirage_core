@@ -26,6 +26,9 @@ declare(strict_types=1);
 
 namespace Mirage;
 
+use ErrorException;
+use Exception;
+
 /**
  * Undocumented class
  */
@@ -34,7 +37,7 @@ class Mirage
     private static RestApp $rest_full_app;
     private static AsyncTask $async_task;
 
-    private function __construct(): bool
+    private function __construct()
     {
         return true;
     }
@@ -42,11 +45,12 @@ class Mirage
     /**
      * Basic error handler function in framework
      *
-     * @param [int] $errno
-     * @param [string] $errstr
-     * @param [string] $errfile
-     * @param [int] $errline
+     * @param int $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int $errline
      * @return void
+     * @throws Exception
      */
     private static function errorHandler(int $errno, string $errstr, string $errfile, int $errline): void
     {
@@ -90,13 +94,14 @@ class Mirage
                 $log = " Unknown error type: [$errno] $errstr\n";
                 break;
         }
-        throw new \Exception($log);
+        throw new Exception($log);
     }
 
     /**
      * Basic shut down function in framework.
      *
      * @return void
+     * @throws Exception
      */
     private static function shutdownHandler(): void
     {
@@ -119,7 +124,7 @@ class Mirage
         ini_set('display_errors', 'off');
         error_reporting(E_ALL);
         set_error_handler('errorHandler');
-        shutdown_function('shutdownHandler');
+        register_shutdown_function('shutdownHandler');
         define('ERR_HANDLER_LOADED', true);
     }
 
@@ -127,6 +132,7 @@ class Mirage
      * Define All environment variables for basic app using this framework.
      *
      * @return void
+     * @throws ErrorException
      */
     private static function defineMirageAppEnvironmentVariables(): void
     {
@@ -281,6 +287,7 @@ class Mirage
      * Register all namespaces, directories and files in both basic app and mirage itself.
      *
      * @return void
+     * @throws ErrorException
      */
     private static function registerMirageNamespace(): void
     {
@@ -333,6 +340,7 @@ class Mirage
      * Brings up all needed components and register all needed namespaces.
      *
      * @return void
+     * @throws ErrorException
      */
     public static function boot(): void
     {
@@ -346,22 +354,26 @@ class Mirage
         self::registerMirageNamespace();
     }
 
-
+    /**
+     * Getting RestApp Instance
+     *
+     * @return RestApp
+     */
     public static function getRestApp(): RestApp
     {
         if (!isset(self::$rest_full_app)) {
-            $rest_full_app = new RestApp();
+            self::$rest_full_app = new RestApp();
         }
 
-        return $rest_full_app;
+        return self::$rest_full_app;
     }
 
     public static function getAsyncTask(): AsyncTask
     {
         if (!isset(self::$async_task)) {
-            $async_task = new AsyncTask();
+            self::$async_task = new AsyncTask();
         }
 
-        return $async_task;
+        return self::$async_task;
     }
 }

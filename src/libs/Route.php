@@ -49,6 +49,9 @@ class Route
     /** @var array route middlewares as each element should be instance of Mirage/Libs/Middleware class */
     private array $middlewares;
 
+    /** @var array route accesses */
+    private array $accesses;
+
     /**
      * Route constructor function.
      *
@@ -57,20 +60,22 @@ class Route
      * @param string $action
      * @param string $name
      * @param array $middlewares
-     * @return void
+     * @param array $accesses
      */
     public function __construct(
         string $path,
         string $method,
         string $action,
         string $name,
-        array $middlewares
+        array $middlewares,
+        array $accesses
     ) {
         $this->path = $path;
         $this->method = $method;
         $this->action = $action;
         $this->name = $name;
         $this->middlewares = $middlewares;
+        $this->accesses = $accesses;
     }
 
     /**

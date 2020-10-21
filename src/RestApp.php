@@ -24,8 +24,11 @@
 
 namespace Mirage;
 
+use Mirage\App\Event;
 use Mirage\App\RoutesCollection;
+use Mirage\Constants\Err;
 use Mirage\Constants\Services;
+use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 
 /**
@@ -33,6 +36,10 @@ use Mirage\Libs\L;
  */
 class RestApp extends \Phalcon\Mvc\Micro
 {
+    private array $services = [];
+    private array $collections = [];
+    private array $events = [];
+
     public function __construct()
     {
         parent::__construct();
@@ -65,7 +72,7 @@ class RestApp extends \Phalcon\Mvc\Micro
             return new \Phalcon\Mvc\Model\Transaction\Manager();
         });
         $this->addService(Services::EVENTS_MANAGER, function () {
-            $manager =  new \Phalcon\Events\Manager();
+            $manager = new \Phalcon\Events\Manager();
             // TODO:: here we should attach some default events
             return $manager;
         });
@@ -98,22 +105,28 @@ class RestApp extends \Phalcon\Mvc\Micro
                     }
                     $route = str_replace('.php', '', $route);
                     $route_class = "\App\Routes\$route";
-                    $this->addCollection(new $route_class);
+                    $route_obj = new $route_class;
+                    if ($route_obj->enabled) {
+                        $this->addCollection($route_obj);
+                    }
                 }
             }
 
             // add events
-            // if (is_readable(APP_DIR . '/events')) {
-            //     $events = opendir($path);
-            //     while ($event = readdir($events)) {
-            //         if (strpos($event, '.php') === false) {
-            //             continue;
-            //         }
-            //         $event = str_replace('.php', '', $event);
-            //         $event_class = "\App\Event\$route";
-            //         $this->addEvent($event_class);
-            //     }
-            // }
+            if (is_readable(APP_DIR . '/events')) {
+                $events = opendir(APP_DIR . '/events');
+                while ($event = readdir($events)) {
+                    if (strpos($event, '.php') === false) {
+                        continue;
+                    }
+                    $event = str_replace('.php', '', $event);
+                    $event_class = "\App\Event\$event";
+                    $event_obj = new $event_class;
+                    if ($event_obj->enabled) {
+                        $this->addEvent($event_obj);
+                    }
+                }
+            }
         }
     }
 
@@ -127,7 +140,7 @@ class RestApp extends \Phalcon\Mvc\Micro
     public function addService(string $name, callable $service): RestApp
     {
         $this->services[$name] = $service;
-        $this->getDi()->setShared($service::Name, $service);
+        $this->getDi()->setShared($name, $service);
 
         return $this;
     }
@@ -166,20 +179,20 @@ class RestApp extends \Phalcon\Mvc\Micro
         return $this->collections;
     }
 
-    // public function addEvent(string $service_name, string $action, $service): RestApp
-    // {
-    //     $this->getDi()->get(Services::EVENTS_MANAGER)->enablePriorities(true);
-    //         $this->getDi()->get(Services::EVENTS_MANAGER)->attach($event_name, $even_action, count($this->events));
-    //         $event_name->setEventsManager($this->getDi()->get(Services::EVENTS_MANAGER));
-    //     $this->events[] = [$service_name, $action, $service];
-    //     return $this;
-    // }
+//    public function addEvent(Event $event): RestApp
+//    {
+//        $this->getDi()->get(Services::EVENTS_MANAGER)->enablePriorities(true);
+//        $this->getDi()->get(Services::EVENTS_MANAGER)->attach($event_name, $even_action, count($this->events));
+//        $event_name->setEventsManager($this->getDi()->get(Services::EVENTS_MANAGER));
+//        $this->events[] = [$service_name, $action, $service];
+//        return $this;
+//    }
 
 
-    // public function getEvents(): array
-    // {
-    //     return $this->events;
-    // }
+    public function getEvents(): array
+    {
+        return $this->events;
+    }
 
 
     /**
@@ -196,11 +209,11 @@ class RestApp extends \Phalcon\Mvc\Micro
             $this->response->createOptionResponseHeaders();
             $this->response->sendHeaders();
 
-            return true;
+            return;
         };
 
         $this->before(function () {
-            return true;
+            return;
         });
 
         $this->after(function () {
@@ -219,7 +232,7 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         $this->notFound(function () {
             throw new HttpException(
-                \Mirage\Constants\Err::REQUEST_NOT_FOUND,
+                Err::REQUEST_NOT_FOUND,
                 'Route not Found: ' . $this->request->getURI()
             );
         });
