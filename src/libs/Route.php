@@ -31,7 +31,7 @@ namespace Mirage\Libs;
  */
 class Route
 {
-    /** @var METHODS http allowed methods */
+    /** constant http allowed methods */
     const METHODS = ['get', 'post', 'put', 'options', 'delete', 'head', 'connect', 'patch', 'purge', 'trace'];
 
     /** @var string uri path which will be resolved by this route */

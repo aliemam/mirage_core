@@ -24,7 +24,7 @@
 
 namespace Mirage\App;
 
-use Constants\Err;
+use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Phalcon\Mvc\Model as PhalconModel;
@@ -85,19 +85,26 @@ class Model extends PhalconModel implements \JsonSerializable
     }
 
     /**
-     * Undocumented function
+     * This function handle all of saving job.
      *
      * @param boolean $force_terminate_on_error
      * @param boolean $calling_after_fetch
-     * @return void
+     * @return bool
      */
     public function saveModel($force_terminate_on_error = true, $calling_after_fetch = false): bool
     {
-        $this->force_terminate = $force_terminate_on_error;
+        $this->force_terminated = $force_terminate_on_error;
         $this->call_after_fetch = $calling_after_fetch;
         $this->getReadConnection()->query("SET NAMES UTF8");
         return $this->save();
     }
+
+    /**
+     * If by any reason model not saved, this function is triggered.
+     *
+     * @throws HttpException
+     * @throws \ErrorException
+     */
     public function notSaved(): void
     {
         $err = [];
@@ -105,14 +112,21 @@ class Model extends PhalconModel implements \JsonSerializable
             $err[] = $msg->getMessage();
         }
         $msg_on_error = join(', ', $err);
-        if ($this->force_terminate) {
+        if ($this->force_terminated) {
             throw new HttpException(Err::DATABASE_SAVE, $msg_on_error);
         } else {
             L::e($msg_on_error);
         }
     }
 
-    public static function findIn($column_name, $values): Resultset
+    /**
+     * This function helps to use IN keyword.
+     *
+     * @param $column_name
+     * @param $values
+     * @return array
+     */
+    public static function findIn($column_name, $values): array
     {
         if (!isset($values) || !isset($column_name)) {
             return [];

@@ -22,27 +22,18 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\App;
+namespace Mirage\Constants;
 
-class Job extends \Threaded
+class ReqMethod
 {
-
-    protected $tasks;
-    protected $tasks_result;
-
-    public function __construct($tasks)
-    {
-        $this->tasks = $tasks;
-        $this->tasks_result = [];
-    }
-
-    public static function generateInputs($params)
-    {
-    }
-    public function handleOutputs(...$param)
-    {
-    }
-    public function doTask()
-    {
-    }
+    const GET = 'get';
+    const POST = 'poast';
+    const OPTION = 'option';
+    const PUT = 'put';
+    const DELETE = 'delete';
+    const HEAD = 'head';
+    const CONNECT = 'connect';
+    const PATCH = 'patch]';
+    const PURGE = 'purge';
+    const TRACE = 'trace';
 }

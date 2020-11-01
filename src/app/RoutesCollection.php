@@ -99,26 +99,23 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
             $methods = strtolower($route_method);
             $methods = explode(',', $methods);
             foreach ($methods as $method) {
-                $methods = strtolower($route_method);
-                $methods = explode(',', $methods);
-                foreach ($methods as $method) {
-                    $collection->{$method}(
-                        $collection_route['path'],
-                        $collection_route['action']
+                $collection->{$method}(
+                    $collection_route['path'],
+                    $collection_route['action']
+                );
+                self::$collections["$route_method:$route_path"]
+                    = new Route(
+                        $route_path,
+                        $route_method,
+                        $route_action,
+                        $route_name,
+                        $route_middlewares,
+                        $route_accesses
                     );
-                    self::$collections["$route_method:$route_path"]
-                        = new Route(
-                            $route_path,
-                            $route_method,
-                            $route_action,
-                            $route_name,
-                            $route_middlewares,
-                            $route_accesses
-                        );
-                }
             }
         }
     }
+
 
     /**
      * Get the value of collection_handler

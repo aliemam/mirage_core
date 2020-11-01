@@ -179,14 +179,14 @@ class RestApp extends \Phalcon\Mvc\Micro
         return $this->collections;
     }
 
-//    public function addEvent(Event $event): RestApp
-//    {
+    public function addEvent(Event $event): RestApp
+    {
 //        $this->getDi()->get(Services::EVENTS_MANAGER)->enablePriorities(true);
 //        $this->getDi()->get(Services::EVENTS_MANAGER)->attach($event_name, $even_action, count($this->events));
 //        $event_name->setEventsManager($this->getDi()->get(Services::EVENTS_MANAGER));
 //        $this->events[] = [$service_name, $action, $service];
-//        return $this;
-//    }
+        return $this;
+    }
 
 
     public function getEvents(): array

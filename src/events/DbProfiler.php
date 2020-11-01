@@ -46,4 +46,9 @@ class DbProfiler extends \Mirage\App\Event
     {
         return $this->profiler;
     }
+
+    public function action()
+    {
+        // TODO: Implement action() method.
+    }
 }

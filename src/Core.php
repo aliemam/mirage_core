@@ -32,7 +32,7 @@ use Exception;
 /**
  * Undocumented class
  */
-class Mirage
+class Core
 {
     private static RestApp $rest_full_app;
     private static AsyncTask $async_task;
