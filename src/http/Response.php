@@ -223,7 +223,7 @@ final class Response extends \Phalcon\Http\Response
         $response->status->http_code = $this->http_code;
         $response->status->dev_code = $this->dev_code;
         $response->status->dev_message = (Config::get('app.env') == 'dev' ? $this->dev_message : '');
-        $response->status->message = Translator::get($this->dev_code);
+        $response->status->message = $this->dev_code;//Translator::get($this->dev_code);
         $response->output = $this->output;
 
         // setup http for sending to client

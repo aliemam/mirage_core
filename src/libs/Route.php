@@ -38,7 +38,7 @@ class Route
     private string $path;
 
     /** @var string of http method */
-    private string $methods;
+    private string $method;
 
     /** @var string function in controller triggered by this route */
     private string $action;

@@ -44,16 +44,16 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
             if (!$route instanceof Route) {
                 throw new ErrorException("[ERROR][100] invalid route object.");
             }
-            $this->{$route->getMethod()}(
-                $route->getPath(),
-                $route->getAction()
-            );
+            $method = $route->getMethod();
+            $path = $route->getPath();
+            $action = $route->getAction();
+            $this->{$method}($path, $action);
         }
     }
 
     public function getUniqueId()
     {
-        return Helper::getUniqueId($this->getPrefix(), $this->getHandler());
+        return Helper::getUniqueId($this->getPrefix());
     }
 
     /**

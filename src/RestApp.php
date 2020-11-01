@@ -45,9 +45,8 @@ class RestApp extends \Phalcon\Mvc\Micro
         parent::__construct();
 
         // create container
+        L::i("Setting DI");
         $this->setDi(new \Phalcon\Di\FactoryDefault());
-
-
     }
 
     /**
@@ -57,27 +56,27 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function bootFrameworkDefaults(): void
     {
-        // add framework default services
-        $this->addService(Services::REQUEST, function () {
-            return new \Mirage\Http\Request();
-        });
-        $this->addService(Services::RESPONSE, function () {
-            return new \Mirage\Http\Response();
-        });
-        $this->addService(Services::RANDOM, function () {
-            return new \Phalcon\Security\Random();
-        });
-        $this->addService(Services::SECURITY, function () {
-            return new \Phalcon\Security();
-        });
-        $this->addService(Services::TRANSACTION, function () {
-            return new \Phalcon\Mvc\Model\Transaction\Manager();
-        });
-        $this->addService(Services::EVENTS_MANAGER, function () {
-            $manager = new \Phalcon\Events\Manager();
-            // TODO:: here we should attach some default events
-            return $manager;
-        });
+//        // add framework default services
+//        $this->addService(Services::REQUEST, function () {
+//            return new \Mirage\Http\Request();
+//        });
+//        $this->addService(Services::RESPONSE, function () {
+//            return new \Mirage\Http\Response();
+//        });
+//        $this->addService(Services::RANDOM, function () {
+//            return new \Phalcon\Security\Random();
+//        });
+//        $this->addService(Services::SECURITY, function () {
+//            return new \Phalcon\Security();
+//        });
+//        $this->addService(Services::TRANSACTION, function () {
+//            return new \Phalcon\Mvc\Model\Transaction\Manager();
+//        });
+//        $this->addService(Services::EVENTS_MANAGER, function () {
+//            $manager = new \Phalcon\Events\Manager();
+//            // TODO:: here we should attach some default events
+//            return $manager;
+//        });
 
     }
 
@@ -104,7 +103,7 @@ class RestApp extends \Phalcon\Mvc\Micro
                         continue;
                     }
                     $route = str_replace('.php', '', $route);
-                    $route_class = "\\App\\Routes\\$route";
+                    $route_class = "\\App\\Route\\$route";
                     if (class_exists($route_class)) {
                         $route_obj = new $route_class;
                         $this->addCollection($route_obj);
@@ -221,6 +220,7 @@ class RestApp extends \Phalcon\Mvc\Micro
         });
 
         $this->after(function () {
+            L::i("Result: ".json_encode($this->getReturnedValue()));
             $this->getReturnedValue()->sendResponse();
 
             // if (\Mirage\Libs\Config::get('app.env') === 'dev') {
@@ -241,6 +241,6 @@ class RestApp extends \Phalcon\Mvc\Micro
             );
         });
 
-        $this->handle();
+        $this->handle($_SERVER['REQUEST_URI']);
     }
 }
