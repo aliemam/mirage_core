@@ -27,7 +27,7 @@ namespace Mirage\Libs;
 use Phalcon\Logger as PLogger;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
-use Phalcon\Logger\Adapter\File as LoggerAdapter;
+use Phalcon\Logger\Adapter\Stream as LoggerAdapter;
 
 /**
  * Class Logger
@@ -101,10 +101,7 @@ class Logger implements LoggerInterface
      */
     public static function create(string $logger_name = null): void
     {
-        self::$logger_name = $logger_name ?? 'mirage';
-        if (!isset(self::$loggers[$logger_name])) {
-            self::$loggers[$logger_name] = new Logger($logger_name);
-        }
+        self::$loggers[$logger_name] ??= new Logger($logger_name ?? 'mirage');
     }
 
     /**

@@ -46,6 +46,8 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         // create container
         $this->setDi(new \Phalcon\Di\FactoryDefault());
+        
+        
     }
 
     /**
@@ -55,6 +57,8 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function bootFrameworkDefaults(): void
     {
+        echo NAMESPACES_LOADED."\n";
+        L::i('asdads');
         // add framework default services
         $this->addService(Services::REQUEST, function () {
             return new \Mirage\Http\Request();

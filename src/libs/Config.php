@@ -35,7 +35,7 @@ final class Config
 {
 
     /** @var Config Singleton instance of Config class */
-    private static Config $instance;
+    private static ?Config $instance = null;
 
     /** @var array All configs stores here */
     private array $configs = [];
@@ -62,9 +62,7 @@ final class Config
      */
     private static function getInstance(): Config
     {
-        if (self::$instance === null) {
-            self::$instance = new Config();
-        }
+        self::$instance ??= new Config();
         return self::$instance;
     }
 
@@ -84,7 +82,7 @@ final class Config
         foreach ($params as $param) {
             if (!isset($config[$param])) {
                 L::e("config $param is not valid in chain config " . implode('.', $params));
-                return false;
+                return;
             }
             $config = &$config[$param];
         }

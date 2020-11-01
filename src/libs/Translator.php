@@ -35,9 +35,9 @@ final class Translator
 {
 
     /** @var Translator Singleton instance */
-    private static Translator $instance;
+    private static ?Translator $instance = null;
 
-    /** @var NativeArray Phalcon NativeArray class that actually handles translating  */
+    /** @var NativeArray Phalcon NativeArray class that actually handles translating */
     private NativeArray $t;
 
     /**
@@ -67,9 +67,7 @@ final class Translator
      */
     private static function getInstance(): Translator
     {
-        if (self::$instance === null) {
-            self::$instance = new Translator();
-        }
+        self::$instance ??= new Translator();
         return self::$instance;
     }
 

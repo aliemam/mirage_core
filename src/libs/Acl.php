@@ -38,7 +38,7 @@ class Acl
 {
 
     /** @var Acl $instance is singleton instance of this class. */
-    private static Acl $instance;
+    private static ?Acl $instance = null;
 
     /** @var Memory $acl is an access control list stores in memory. */
     private Memory $acl;
@@ -66,10 +66,7 @@ class Acl
      */
     private static function getInstance(): Acl
     {
-        if (self::$instance === null) {
-            self::$instance = new Acl();
-        }
-
+        self::$instance ??= new Acl();
         return self::$instance;
     }
 

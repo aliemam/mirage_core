@@ -52,7 +52,7 @@ class Core
      * @return void
      * @throws Exception
      */
-    private static function errorHandler(int $errno, string $errstr, string $errfile, int $errline): void
+    public static function errorHandler(int $errno, string $errstr, string $errfile, int $errline)
     {
         $log = "";
         switch ($errno) {
@@ -103,10 +103,10 @@ class Core
      * @return void
      * @throws Exception
      */
-    private static function shutdownHandler(): void
+    public static function shutdownHandler(): void
     {
         $error = error_get_last();
-        self::errorHandler(
+        Core::errorHandler(
             (int) $error['type'],
             (string) $error['message'],
             (string) $error['file'],
@@ -123,8 +123,8 @@ class Core
     {
         ini_set('display_errors', 'off');
         error_reporting(E_ALL);
-        set_error_handler('errorHandler');
-        register_shutdown_function('shutdownHandler');
+//        set_error_handler('\Mirage\Core::errorHandler');
+//        register_shutdown_function('\Mirage\Core::shutdownHandler');
         define('ERR_HANDLER_LOADED', true);
     }
 
@@ -274,10 +274,10 @@ class Core
             define('VENDOR_DIR', MIRAGE_APP_DIR . '/vendor');
         }
         if (!defined('MIRAGE_DIR')) {
-            if (!is_readable(VENDOR_DIR . '/aliemam/mirage/src')) {
+            if (!is_readable(VENDOR_DIR . '/aliemam/mirage_core/src')) {
                 throw new ErrorException('[ERROR][100] Unable to define MIRAGE_DIR');
             }
-            define('MIRAGE_DIR', VENDOR_DIR . '/aliemam/mirage/src');
+            define('MIRAGE_DIR', VENDOR_DIR . '/aliemam/mirage_core/src');
         }
 
         define('ENV_VAR_LOADED', true);
@@ -291,10 +291,6 @@ class Core
      */
     private static function registerMirageNamespace(): void
     {
-        if (!defined('ENV_VAR_LOADED')) {
-            self::defineMirageAppEnvironmentVariables();
-        }
-
         // require vendor autoload
         require_once VENDOR_DIR . '/autoload.php';
 
@@ -332,6 +328,8 @@ class Core
             require_once $file;
         }
 
+        $loader->register();
+
         define('NAMESPACES_LOADED', true);
     }
 
@@ -344,13 +342,8 @@ class Core
      */
     public static function boot(): void
     {
-        \Mirage\Libs\L::i('bootMirageFrameworkErrorHandlers...');
         self::bootMirageFrameworkErrorHandlers();
-
-        \Mirage\Libs\L::i('defineMirageAppEnvironmentVariables...');
         self::defineMirageAppEnvironmentVariables();
-
-        \Mirage\Libs\L::i('registerMirageNamespace...');
         self::registerMirageNamespace();
     }
 

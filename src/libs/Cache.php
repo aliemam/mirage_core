@@ -33,11 +33,11 @@ use Phalcon\Cache\Backend\Redis;
  * Class Cache
  * @package Mirage\Libs
  */
-class Cache
+final class Cache
 {
 
     /** @var Cache Singleton instance of class Cache */
-    private static Cache $instance;
+    private static ?Cache $instance = null;
 
     /** @var bool checks if cache should work or should be disabled */
     private bool $is_disable = false;
@@ -86,10 +86,7 @@ class Cache
      */
     private static function getInstance(): Cache
     {
-        if (self::$instance === null) {
-            self::$instance = new Cache();
-        }
-
+        self::$instance ??= new Cache();
         return self::$instance;
     }
 

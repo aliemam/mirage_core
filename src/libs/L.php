@@ -102,36 +102,4 @@ final class L extends Logger
     {
         self::instance()->debug($message);
     }
-
-    //    public static function __callStatic($name, $arguments) {
-    //        $instance = self::getInstance();
-    //        $message = implode(', ', $arguments);
-    ////        $message = '['. Helper::getIP() .']['. $instance->getSubPrefix() .'] '. $message;
-    //        switch( $name ) {
-    //            case 'em':
-    //                $instance->emergency($message);
-    //                break;
-    //            case 'a':
-    //                $instance->alert($message);
-    //                break;
-    //            case 'c':
-    //                $instance->critical($message);
-    //                break;
-    //            case 'e':
-    //                $instance->error($message);
-    //                break;
-    //            case 'w':
-    //                $instance->warning($message);
-    //                break;
-    //            case 'n':
-    //                $instance->notice($message);
-    //                break;
-    //            case 'i':
-    //                $instance->info($message);
-    //                break;
-    //            case 'd':
-    //                $instance->debug($message);
-    //                break;
-    //        }
-    //    }
 }
