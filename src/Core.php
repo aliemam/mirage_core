@@ -123,8 +123,8 @@ class Core
     {
         ini_set('display_errors', 'off');
         error_reporting(E_ALL);
-//        set_error_handler('\Mirage\Core::errorHandler');
-//        register_shutdown_function('\Mirage\Core::shutdownHandler');
+        set_error_handler('\Mirage\Core::errorHandler');
+        register_shutdown_function('\Mirage\Core::shutdownHandler');
         define('ERR_HANDLER_LOADED', true);
     }
 

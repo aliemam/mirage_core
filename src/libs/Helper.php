@@ -239,9 +239,9 @@ class Helper
 
     /**
      * This function converts text in camel case format to under score format
-     * @example given helloWorld returns hello_world
      * @param $input
      * @return string
+     * @example given helloWorld returns hello_world
      */
     public static function convertCamelCaseToUnderScore($input)
     {
@@ -255,9 +255,9 @@ class Helper
 
     /**
      * This function converts text in under score format to camel case format
-     * @example given hello_world returns helloWorld
      * @param $input
      * @return string
+     * @example given hello_world returns helloWorld
      */
     public static function convertUnderScoreToCamelCase($input)
     {
@@ -308,9 +308,8 @@ class Helper
      */
     public static function env(string $key, string $default_value = null)
     {
-        $env_value = $_ENV[$key];
+        $env_value = $_ENV[$key] ?? false;
         if ($env_value !== false) {
-
             if (isset($env_value[0])) {
                 if ($env_value[0] == '[' && $env_value[strlen($env_value) - 1] == ']') {
                     $new_env_value = str_replace(['[', ']', "'"], '', $env_value);

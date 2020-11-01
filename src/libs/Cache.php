@@ -91,6 +91,15 @@ final class Cache
     }
 
     /**
+     * Create object instance
+     * @return Cache
+     */
+    public static function create(): Cache
+    {
+        return self::getInstance();
+    }
+
+    /**
      * @param string $key This is key of data we want to save in memory
      * @param mixed $value This is value of data we want to save in memory and will be encoded as json before saving.
      * @param string $time This parameter is English textual datetime description that

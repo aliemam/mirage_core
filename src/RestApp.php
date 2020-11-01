@@ -46,8 +46,8 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         // create container
         $this->setDi(new \Phalcon\Di\FactoryDefault());
-        
-        
+
+
     }
 
     /**
@@ -57,8 +57,6 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function bootFrameworkDefaults(): void
     {
-        echo NAMESPACES_LOADED."\n";
-        L::i('asdads');
         // add framework default services
         $this->addService(Services::REQUEST, function () {
             return new \Mirage\Http\Request();
@@ -81,8 +79,6 @@ class RestApp extends \Phalcon\Mvc\Micro
             return $manager;
         });
 
-        // add framework default route
-        $this->addCollection(RoutesCollection::healthCheckCollection());
     }
 
     /**
@@ -108,10 +104,12 @@ class RestApp extends \Phalcon\Mvc\Micro
                         continue;
                     }
                     $route = str_replace('.php', '', $route);
-                    $route_class = "\App\Routes\$route";
-                    $route_obj = new $route_class;
-                    if ($route_obj->enabled) {
+                    $route_class = "\\App\\Routes\\$route";
+                    if (class_exists($route_class)) {
+                        $route_obj = new $route_class;
                         $this->addCollection($route_obj);
+                    } else {
+                        L::w("Class $route_class not exists");
                     }
                 }
             }
@@ -124,10 +122,12 @@ class RestApp extends \Phalcon\Mvc\Micro
                         continue;
                     }
                     $event = str_replace('.php', '', $event);
-                    $event_class = "\App\Event\$event";
-                    $event_obj = new $event_class;
-                    if ($event_obj->enabled) {
+                    $event_class = "\\App\\Event\\$event";
+                    if (class_exists($event_class)) {
+                        $event_obj = new $event_class;
                         $this->addEvent($event_obj);
+                    } else {
+                        L::w("Class $event_class not exists");
                     }
                 }
             }
@@ -167,8 +167,8 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function addCollection(RoutesCollection $collection): RestApp
     {
-        $this->collections[$collection->id()] = $collection;
-        $collection::boot();
+        $this->collections[$collection->getUniqueId()] = $collection;
+        $collection->boot();
         $this->mount($collection);
         return $this;
     }

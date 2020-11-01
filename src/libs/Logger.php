@@ -97,7 +97,6 @@ class Logger implements LoggerInterface
     /**
      * Here new logger will be created if there was no logger with that logger_name was created before.
      * @param string|null $logger_name
-     * @throws \ErrorException
      */
     public static function create(string $logger_name = null): void
     {
@@ -108,7 +107,6 @@ class Logger implements LoggerInterface
      * Get single instance of Logger Object
      * @param string|null $logger_name
      * @return LoggerAdapter
-     * @throws \ErrorException
      */
     protected static function instance(string $logger_name = null): LoggerAdapter
     {

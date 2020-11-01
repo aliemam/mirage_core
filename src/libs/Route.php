@@ -37,20 +37,20 @@ class Route
     /** @var string uri path which will be resolved by this route */
     private string $path;
 
-    /** @var string http method */
-    private string $method;
+    /** @var string of http method */
+    private string $methods;
 
     /** @var string function in controller triggered by this route */
     private string $action;
 
-    /** @var string name of route */
-    private string $name;
+    /** @var string id of route */
+    private string $id;
 
     /** @var array route middlewares as each element should be instance of Mirage/Libs/Middleware class */
-    private array $middlewares;
+    private array $middlewares = [];
 
     /** @var array route accesses */
-    private array $accesses;
+    private array $accesses = [];
 
     /**
      * Route constructor function.
@@ -58,7 +58,6 @@ class Route
      * @param string $path
      * @param string $method
      * @param string $action
-     * @param string $name
      * @param array $middlewares
      * @param array $accesses
      */
@@ -66,14 +65,13 @@ class Route
         string $path,
         string $method,
         string $action,
-        string $name,
-        array $middlewares,
-        array $accesses
+        array $middlewares = [],
+        array $accesses = []
     ) {
         $this->path = $path;
         $this->method = $method;
         $this->action = $action;
-        $this->name = $name;
+        $this->id = Helper::getUniqueId($path, $method, $action);
         $this->middlewares = $middlewares;
         $this->accesses = $accesses;
     }
@@ -109,13 +107,13 @@ class Route
     }
 
     /**
-     * Get the value of name
+     * Get the value of id
      *
      * @return string
      */
-    public function getName()
+    public function getId(): string
     {
-        return $this->name;
+        return $this->id;
     }
 
     /**
@@ -126,5 +124,15 @@ class Route
     public function getMiddlewares(): array
     {
         return $this->middlewares;
+    }
+
+    /**
+     * Get the value of accesses
+     *
+     * @return array
+     */
+    public function getAccesses(): array
+    {
+        return $this->accesses;
     }
 }

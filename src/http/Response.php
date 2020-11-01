@@ -38,13 +38,6 @@ use Mirage\Libs\Translator;
 
 final class Response extends \Phalcon\Http\Response
 {
-
-    const HEADERS = [
-        'Origin', 'X-Requested-With', 'content-type',
-        'M-AUTH', 'M-HASH', 'M-TIME', 'M-VERSION', 'M-RANDOM', 'M-LANG'
-    ];
-    const METHODS = ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'];
-
     private $has_error = false;
     private $dev_message;
     private $dev_code;
@@ -193,10 +186,9 @@ final class Response extends \Phalcon\Http\Response
     public function createOptionResponseHeaders(): void
     {
         // setup http for sending to client
-        $allow_origins = implode(',', Config::get('app.allow_origins') ??
-            (Helper::getHeader("ORIGIN") ? Helper::getHeader("ORIGIN") : '*'));
-        $allow_methods = implode(',', array_merge(self::METHODS, Config::get('app.allow_methods') ?? []));
-        $allow_headers = implode(',', array_merge(self::HEADERS, Config::get('app.allow_headers') ?? []));
+        $allow_origins = implode(',', Config::get('app.allow_origins'));
+        $allow_methods = implode(',', Config::get('app.allow_methods'));
+        $allow_headers = implode(',', Config::get('app.allow_headers'));
 
         L::d("Allow Origin: " . $allow_origins);
         L::d("Origin Header: " . $allow_methods);
@@ -235,10 +227,9 @@ final class Response extends \Phalcon\Http\Response
         $response->output = $this->output;
 
         // setup http for sending to client
-        $allow_origins = implode(',', Config::get('app.allow_origins') ??
-            (Helper::getHeader("ORIGIN") ? Helper::getHeader("ORIGIN") : '*'));
-        $allow_methods = implode(',', array_merge(self::METHODS, Config::get('app.allow_methods') ?? []));
-        $allow_headers = implode(',', array_merge(self::HEADERS, Config::get('app.allow_headers') ?? []));
+        $allow_origins = implode(',', Config::get('app.allow_origins'));
+        $allow_methods = implode(',', Config::get('app.allow_methods'));
+        $allow_headers = implode(',', Config::get('app.allow_headers'));
 
         L::d("Allow Origin: " . $allow_origins);
         L::d("Origin Header: " . $allow_methods);
