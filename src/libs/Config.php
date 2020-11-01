@@ -48,6 +48,9 @@ final class Config
 //        $dotenv = Dotenv::createMutable(MIRAGE_APP_DIR);
 //        $dotenv->load();
         foreach (scandir(CONFIG_DIR) as $config_file) {
+            if (strpos($config_file, '.php') === false) {
+                continue;
+            }
             $path = CONFIG_DIR . '/' . $config_file;
             $config_name = str_replace('.php', '', $config_file);
             if (is_file($path)) {
@@ -117,13 +120,5 @@ final class Config
         }
 
         return $config;
-    }
-
-
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
-        }
     }
 }

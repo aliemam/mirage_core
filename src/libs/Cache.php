@@ -59,8 +59,8 @@ final class Cache
     private function __construct()
     {
         $this->is_disable = !Config::get('app.enable_cache');
-        $this->cache_prefix = Config::get('cache.prefix');
         $this->cache_driver = Config::get('cache.driver');
+        $this->cache_prefix = Config::get("cache.$this->cache_driver.prefix");
 
         try {
             $frontCache = new DataFrontend([
@@ -68,7 +68,7 @@ final class Cache
             ]);
             switch ($this->cache_driver) {
                 case 'redis':
-                    $this->cache = new Redis($frontCache, Config::get('cache'));
+                    $this->cache = new Redis($frontCache, Config::get("cache.$this->cache_driver"));
                     break;
                 default:
                     throw new ErrorException("Unknown cache driver: $this->cache_driver");
@@ -182,12 +182,5 @@ final class Cache
         }
         L::d("Found $found item to delete");
         return ($found > 0);
-    }
-
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
-        }
     }
 }

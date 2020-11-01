@@ -43,8 +43,8 @@ class Logger implements LoggerInterface
      */
     private static string $logger_name;
 
-    /** @var LoggerAdapter Phalcon Logger object that actually handles logging process */
-    private LoggerAdapter $logger;
+    /** @var PLogger Phalcon Logger object that actually handles logging process */
+    private PLogger $logger;
 
     /**
      * This variable can be used when you want to add more data to all messages.
@@ -69,8 +69,8 @@ class Logger implements LoggerInterface
     private function __construct($logger_name)
     {
         try {
-            $this->logger =
-                new LoggerAdapter(LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time()), ['mode' => 'a']);
+            $adapter = new LoggerAdapter(LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log', ['mode' => 'a']);
+            $this->logger = new PLogger('messages',['main' => $adapter,]);
             switch (Config::get('app.env')) {
                 case 'pro':
                     $this->logger->setLogLevel(PLogger::ERROR);
@@ -85,12 +85,6 @@ class Logger implements LoggerInterface
             $this->prefix = "[$tag][$ip][$route]";
         } catch (\Exception $e) {
             throw new \ErrorException('Cant create Logger: ' . $logger_name . ' :' . $e->getMessage());
-        }
-    }
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
         }
     }
 
@@ -108,7 +102,7 @@ class Logger implements LoggerInterface
      * @param string|null $logger_name
      * @return LoggerAdapter
      */
-    protected static function instance(string $logger_name = null): LoggerAdapter
+    protected static function instance(string $logger_name = null): PLogger
     {
         if (!isset(self::$logger_name) || !isset(self::$loggers[$logger_name])) {
             self::create($logger_name);

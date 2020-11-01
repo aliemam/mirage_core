@@ -83,11 +83,4 @@ final class Translator
         $tmp = explode('-', $code);
         return $instance->t->_($tmp[0], $param);
     }
-
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
-        }
-    }
 }
