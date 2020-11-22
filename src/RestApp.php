@@ -29,6 +29,7 @@ use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
+use Mirage\Libs\Config;
 use Mirage\Libs\L;
 
 /**
@@ -57,26 +58,25 @@ class RestApp extends \Phalcon\Mvc\Micro
     public function bootFrameworkDefaults(): void
     {
 //        // add framework default services
-//        $this->addService(Services::REQUEST, function () {
-//            return new \Mirage\Http\Request();
-//        });
-//        $this->addService(Services::RESPONSE, function () {
-//            return new \Mirage\Http\Response();
-//        });
-//        $this->addService(Services::RANDOM, function () {
-//            return new \Phalcon\Security\Random();
-//        });
-//        $this->addService(Services::SECURITY, function () {
-//            return new \Phalcon\Security();
-//        });
-//        $this->addService(Services::TRANSACTION, function () {
-//            return new \Phalcon\Mvc\Model\Transaction\Manager();
-//        });
-//        $this->addService(Services::EVENTS_MANAGER, function () {
-//            $manager = new \Phalcon\Events\Manager();
-//            // TODO:: here we should attach some default events
-//            return $manager;
-//        });
+        $this->addService(Services::REQUEST, function () {
+            return new \Mirage\Http\Request();
+        });
+        $this->addService(Services::RESPONSE, function () {
+            return new \Mirage\Http\Response();
+        });
+        $this->addService(Services::RANDOM, function () {
+            return new \Phalcon\Security\Random();
+        });
+        $this->addService(Services::SECURITY, function () {
+            return new \Phalcon\Security();
+        });
+        $this->addService(Services::TRANSACTION, function () {
+            return new \Phalcon\Mvc\Model\Transaction\Manager();
+        });
+        $this->addService(Services::EVENTS_MANAGER, function () {
+            $manager = new \Phalcon\Events\Manager();
+            return $manager;
+        });
 
     }
 
@@ -210,6 +210,7 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         if ($this->request->isOptions()) {
             $this->response->createOptionResponseHeaders();
+            $this->response->setStatusCode(200, 'OK');
             $this->response->sendHeaders();
 
             return;
@@ -220,18 +221,18 @@ class RestApp extends \Phalcon\Mvc\Micro
         });
 
         $this->after(function () {
-            L::i("Result: ".json_encode($this->getReturnedValue()));
-            $this->getReturnedValue()->sendResponse();
-
-            // if (\Mirage\Libs\Config::get('app.env') === 'dev') {
-            //     $profiles = $this->getDi()->getShared(Services::PROFILE)->getProfiles();
-            //     foreach ($profiles as $profile) {
-            //         echo 'SQL Statement: ', $profile->getSQLStatement(), '\n';
-            //         echo 'Start Time: ', $profile->getInitialTime(), '\n';
-            //         echo 'Final Time: ', $profile->getFinalTime(), '\n';
-            //         echo 'Total Elapsed Time: ', $profile->getTotalElapsedSeconds(), '\n';
-            //     }
-            // }
+            if (Config::get('app.env') === 'dev') {
+                $profiles = $this->getDi()->getShared(Services::PROFILE)->getProfiles();
+                foreach ($profiles as $profile) {
+                    L::d('SQL Statement: ', $profile->getSQLStatement());
+                    L::d('Start Time: ', $profile->getInitialTime());
+                    L::d('Final Time: ', $profile->getFinalTime());
+                    L::d('Total Elapsed Time: ', $profile->getTotalElapsedSeconds());
+                }
+            }
+            $result = $this->getReturnedValue();
+            L::i("Result: " . json_encode($result));
+            $result->sendResponse();
         });
 
         $this->notFound(function () {

@@ -35,7 +35,6 @@ use Mirage\Libs\Translator;
  *
  * @package Mirage
  */
-
 final class Response extends \Phalcon\Http\Response
 {
     private $has_error = false;
@@ -58,7 +57,8 @@ final class Response extends \Phalcon\Http\Response
         string $dev_code = Ok::SUCCESS,
         string $dev_message = 'everything is good',
         int $cache_exp_time = null
-    ): Response {
+    ): Response
+    {
         $response = new self;
         $response->has_error = ($dev_code[0] === 'f');
         $tmp = explode('-', $dev_code);
@@ -194,7 +194,6 @@ final class Response extends \Phalcon\Http\Response
         L::d("Origin Header: " . $allow_methods);
         L::d("Origin Header: " . $allow_headers);
 
-        $this->setStatusCode(200, 'OK');
         $this->setHeader('Access-Control-Allow-Credentials', true);
         $this->setHeader('Access-Control-Allow-Origin', $allow_origins);
         $this->setHeader('Access-Control-Allow-Methods', $allow_methods);
@@ -203,6 +202,7 @@ final class Response extends \Phalcon\Http\Response
 
     public function sendResponse(): void
     {
+        // logging everythings
         if (Config::get('app.log_mode') == 'complete') {
             $out_put_log = json_encode($this->output);
         } else {
@@ -223,27 +223,14 @@ final class Response extends \Phalcon\Http\Response
         $response->status->http_code = $this->http_code;
         $response->status->dev_code = $this->dev_code;
         $response->status->dev_message = (Config::get('app.env') == 'dev' ? $this->dev_message : '');
-        $response->status->message = $this->dev_code;//Translator::get($this->dev_code);
+        $response->status->message = Translator::get($this->dev_code);
         $response->output = $this->output;
 
         // setup http for sending to client
-        $allow_origins = implode(',', Config::get('app.allow_origins'));
-        $allow_methods = implode(',', Config::get('app.allow_methods'));
-        $allow_headers = implode(',', Config::get('app.allow_headers'));
-
-        L::d("Allow Origin: " . $allow_origins);
-        L::d("Origin Header: " . $allow_methods);
-        L::d("Origin Header: " . $allow_headers);
-
-        $this->setHeader('Access-Control-Allow-Credentials', true);
-        $this->setHeader('Access-Control-Allow-Origin', $allow_origins);
-        $this->setHeader('Access-Control-Allow-Methods', $allow_methods);
-        $this->setHeader('Access-Control-Allow-Headers', $allow_headers);
-
-        $response = json_encode($response);
-        $this->setStatusCode((int) $this->http_code, $this->getHttpResponseDescription($this->http_code));
+        $this->createOptionResponseHeaders();
+        $this->setStatusCode((int)$this->http_code, $this->getHttpResponseDescription($this->http_code));
         $this->setEtag(md5(serialize($response)));
-        $this->setContent($response);
+        $this->setContent(json_encode($response));
 
         $this->send();
     }

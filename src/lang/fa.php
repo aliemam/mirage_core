@@ -28,24 +28,40 @@ return [
     'f00201' => 'مشکل در پاسخ', // response template is not valid
 
     // Database
-    'f00300' => 'unknown database error',
-    'f00301' => 'database saving action error',
+    'f00300' => 'لطفا کمی صبر کنید در حال رفع ایراد هستیم. مرسی',
+    'f00301' => 'خطا در ذخیره سازی',
 
     // Authentication
-    'f00400' => 'unknown authentication error',
-    'f00401' => 'invalid username or password',
-    'f00402' => 'invalid account type',
-    'f00403' => 'login failed',
-    'f00404' => 'auth token not found',
-    'f00405' => 'auth token is invalid',
-    'f00406' => 'auth token is invalid',
-    'f00407' => 'auth token signature is invalid',
-    'f00408' => 'auth token before validation error',
-    'f00409' => 'auth header is empty',
-    'f00410' => 'auth header not found',
-    'f00411' => 'auth token after validation error',
-    'f00412' => 'auth token invalid payload',
-    'f00413' => 'database saving action error',
-    'f00414' => 'unknown database error',
-    'f00415' => 'hash key not exist',
+    'f00400' => 'لطفا کمی صبر کنید در حال رفع ایراد هستیم. مرسی',
+    'f00401' => 'نام کاربری یا رمز عبور اشتباه است',
+    'f00402' => 'اکانت مورد نظر معتبر نیست',
+    'f00403' => 'خطا در ورود',
+    'f00404' => 'خطا در ورود',
+    'f00405' => 'خطا در ورود',
+    'f00406' => 'خطا در ورود',
+    'f00407' => 'خطا در ورود',
+    'f00408' => 'خطا در ورود',
+    'f00409' => 'خطا در ورود',
+    'f00410' => 'خطا در ورود',
+    'f00411' => 'خطا در ورود',
+    'f00412' => 'خطا در ورود',
+    'f00413' => 'خطا در ورود',
+
+    // Acl
+    'f00500' => 'لطفا کمی صبر کنید در حال رفع ایراد هستیم. مرسی',
+    'f00501' => 'دسترسی غیر مجاز',
+    'f00502' => 'دسترسی غیر مجاز',
+    'f00503' => 'دسترسی غیر مجاز',
+
+    // Request Hash
+    'f00600' => 'لطفا کمی صبر کنید در حال رفع ایراد هستیم. مرسی',
+    'f00601' => 'درخواست مجاز نیست',
+    'f00602' => 'درخواست مجاز نیست',
+    'f00603' => 'درخواست مجاز نیست',
+    'f00604' => 'درخواست مجاز نیست',
+    'f00605' => 'درخواست مجاز نیست',
+    'f00606' => 'درخواست مجاز نیست',
+    'f00607' => 'درخواست مجاز نیست',
+    'f00608' => 'درخواست مجاز نیست',
+    'f00609' => 'درخواست مجاز نیست',
 ];

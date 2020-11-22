@@ -47,6 +47,22 @@ return [
     'f00411' => 'auth token after validation error',
     'f00412' => 'auth token invalid payload',
     'f00413' => 'database saving action error',
-    'f00414' => 'unknown database error',
-    'f00415' => 'hash key not exist',
+
+    // Acl
+    'f00500' => 'unknown acl error',
+    'f00501' => 'access denied',
+    'f00502' => 'token not found or invalid',
+    'f00503' => 'role name in invalid',
+
+    // Request Hash
+    'f00600' => 'unknown request hash error',
+    'f00601' => 'hash key is invalid',
+    'f00602' => 'hash version is invalid',
+    'f00603' => 'hash time is invalid',
+    'f00604' => 'hash random is invalid',
+    'f00605' => 'hash token is invalid',
+    'f00606' => 'hash client token is invalid',
+    'f00607' => 'hash tokens are not identical',
+    'f00608' => 'hash duplication',
+    'f00609' => 'hash IP call limit reaches',
 ];

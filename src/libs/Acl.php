@@ -75,7 +75,7 @@ class Acl
      * @return Acl
      * @throws ErrorException
      */
-    public static function get(): Acl
+    public static function get(): ?Acl
     {
         $instance = self::getInstance();
         $cache_id = Helper::getUniqueId('mirage', 'acl');
@@ -84,6 +84,7 @@ class Acl
             if (is_file(STORAGE_DIR . '/acl.data')) {
                 L::d('acl is loading');
                 $instance->acl = unserialize(file_get_contents(STORAGE_DIR . '/acl.data'));
+                Cache::add($cache_id, serialize($instance->acl));
                 return $instance;
             } else {
                 return null;
@@ -145,10 +146,10 @@ class Acl
      * @param string $role_name This is a name of role that is allowed to do operation.
      * @param string $resource_name This is a name of resource that role is assigned to.
      * @param string $operation_name This is operation that role allowed to operate.
-     * @return mixed
+     * @return bool
      * @throws ErrorException
      */
-    public static function isAllowed(string $role_name, string $resource_name, string $operation_name): void
+    public static function isAllowed(string $role_name, string $resource_name, string $operation_name): bool
     {
         $instance = self::getInstance();
         L::d("Checking role: $role_name in resource: $resource_name and operation: $operation_name");

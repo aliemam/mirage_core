@@ -37,30 +37,30 @@ use Mirage\Libs\L;
 
 final class Request extends \Phalcon\Http\Request
 {
-    /**
-     * Get Matched Route Object
-     *
-     * @param \Phalcon\Mvc\Router\RouteInterface $router
-     * @return void
-     */
-    public static function getRoute(\Phalcon\Mvc\Router\RouteInterface $router)
-    {
-        $route_path = $router->getMatchedRoute()->getPattern();
-        return RoutesCollection::getCollections()[$route_path] ?? null;
-    }
-
-    /**
-     * Get Middlewares of Matched Route Object
-     *
-     * @param \Phalcon\Mvc\Router\RouteInterface $router
-     * @return void
-     */
-    public static function getMiddlewares(\Phalcon\Mvc\Router\RouteInterface $router)
-    {
-        $route_path = $router->getMatchedRoute()->getPattern();
-        $route = RoutesCollection::getCollections()[$route_path] ?? null;
-        return $route->getMiddlewares() ?? [];
-    }
+//    /**
+//     * Get Matched Route Object
+//     *
+//     * @param \Phalcon\Mvc\Router\RouteInterface $router
+//     * @return void
+//     */
+//    public static function getRoute(\Phalcon\Mvc\Router\RouteInterface $router)
+//    {
+//        $route_path = $router->getMatchedRoute()->getPattern();
+//        return RoutesCollection::getCollections()[$route_path] ?? null;
+//    }
+//
+//    /**
+//     * Get Middlewares of Matched Route Object
+//     *
+//     * @param \Phalcon\Mvc\Router\RouteInterface $router
+//     * @return void
+//     */
+//    public static function getMiddlewares(\Phalcon\Mvc\Router\RouteInterface $router)
+//    {
+//        $route_path = $router->getMatchedRoute()->getPattern();
+//        $route = RoutesCollection::getCollections()[$route_path] ?? null;
+//        return $route->getMiddlewares() ?? [];
+//    }
 
     /**
      * Get All data in request. Post data, Payload data, Query String data, ...
