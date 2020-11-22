@@ -78,13 +78,13 @@ class Cache
                 !in_array($cache_config['adapter'], ['redis', 'memcached', 'memory'])) {
                 throw new ErrorException('Driver should be specified [redis|memcached|memory]');
             }
-            if (!isset($cache_config['defaultSerializer']) ||
+            if (!isset($cache_config['serializer']) ||
                 !in_array(
                     $cache_config['serializer'],
                     ['base64', 'Base64', 'igbinary', 'Igbinary', 'json', 'Json', 'msgpack', 'Msgpack', 'php', 'Php']
                 )
             ) {
-                $cache_config['defaultSerializer'] = 'none';
+                $cache_config['serializer'] = 'none';
             }
             $cache_config['defaultSerializer'] = ucfirst($cache_config['serializer']);
             $adapter_factory = new AdapterFactory(
@@ -92,6 +92,7 @@ class Cache
                 [
                     'defaultSerializer' => $cache_config['defaultSerializer'],
                     'lifetime' => $cache_config['lifetime'] ?? 31536000
+                    
                 ]
             );
             $cache_factory = new CacheFactory($adapter_factory);

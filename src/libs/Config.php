@@ -74,7 +74,7 @@ final class Config
      * Create object instance
      * @return Config
      */
-    public static function create(): Config
+    public static function boot(): Config
     {
         return self::getInstance();
     }
@@ -85,39 +85,40 @@ final class Config
      * Then it assigns the value parameter to config[c1][c2][c3].
      * @param string $params In config chain this param is something like co1.co2.co3... .
      * @param mixed $value The value that should save in configs
-     * @return void
+     * @return bool
      * @throws ErrorException
      */
-    public static function set(string $params, $value): void
+    public static function set(string $params, $value): bool
     {
         $instance = self::getInstance();
         $config = &$instance->configs;
         $params = explode('.', $params);
         foreach ($params as $param) {
             if (!isset($config[$param])) {
-                L::e("config $param is not valid in chain config " . implode('.', $params));
-                return;
+                return false;
             }
             $config = &$config[$param];
         }
         $config = $value;
+
+        return true;
     }
 
     /**
      * Get config.
      * This function gets $params in format of c1.c2.c3 and value of mixed. Then it returns value of config[c1][c2][c3].
-     * @param string $params In config chain this param is something like co1.co2.co3... .
+     * @param string|null $params In config chain this param is something like co1.co2.co3... .
      * @return array|bool|mixed
      * @throws ErrorException
      */
-    public static function get(string $params)
+    public static function get(?string $params = null)
     {
         $config = self::getInstance()->configs;
+        if(!isset($params)) return $config;
         $params = explode('.', $params);
         foreach ($params as $param) {
             if (!isset($config[$param])) {
-                L::e("config $param is not valid in chain config " . implode('.', $params));
-                return false;
+                return null;
             }
             $config = $config[$param];
         }

@@ -77,7 +77,9 @@ class Logger implements LoggerInterface
     private function __construct(string $logger_name)
     {
         try {
-            $path = LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time());
+            $path = LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
+            fopen($path, 'a+');
+            chmod($path, 0777);
             $adapter = new Stream($path);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             switch (Config::get('app.env')) {
@@ -88,7 +90,9 @@ class Logger implements LoggerInterface
                     $this->logger->setLogLevel(PhalconLogger::DEBUG);
                     break;
             }
-            chmod($path, 0777);
+            $this->logger_name = $logger_name;
+            $this->tag = $tag ?? 'NT';
+
             $tracker = Config::get('app.request_tracker') ?? time();
             $tag = $this->tag;
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
@@ -103,16 +107,14 @@ class Logger implements LoggerInterface
      * Get single instance of Logger Object
      * @param string|null $logger_name
      * @param string|null $tag
-     * @return PhalconLogger
+     * @return Logger
      * @throws ErrorException
      */
-    public static function getInstance(?string $logger_name = null, ?string $tag = null): PhalconLogger
+    public static function getInstance(?string $logger_name = null, ?string $tag = null): self
     {
         $logger_name ??= self::$default_logger_name;
         if (!isset(self::$loggers[$logger_name])) {
             self::$loggers[$logger_name] = new Logger($logger_name);
-            self::$loggers[$logger_name]->setLoggerName($logger_name);
-            self::$loggers[$logger_name]->setTag($tag ?? 'NT');
         }
         return self::$loggers[$logger_name];
     }
