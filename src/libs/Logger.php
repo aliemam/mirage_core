@@ -24,10 +24,10 @@
 
 namespace Mirage\Libs;
 
-use Phalcon\Logger as PLogger;
-use Psr\Log\LogLevel;
+use ErrorException;
+use Phalcon\Logger as PhalconLogger;
 use Psr\Log\LoggerInterface;
-use Phalcon\Logger\Adapter\Stream as LoggerAdapter;
+use Phalcon\Logger\Adapter\Stream;
 
 /**
  * Class Logger
@@ -35,16 +35,24 @@ use Phalcon\Logger\Adapter\Stream as LoggerAdapter;
  */
 class Logger implements LoggerInterface
 {
-    /** @var array of Logger Objects that store here as Singleton Object */
+    /**
+     * @var array of Logger Objects that store here as Singleton Object
+     */
     private static array $loggers = [];
+
+    /**
+     * This is a default logger to be called if nothing passed
+     * @var string each logger has name that can be identified by that name,
+     */
+    private static string $default_logger_name = 'mirage';
 
     /**
      * @var string each logger has name that can be identified by that name
      */
-    private static string $logger_name;
+    private string $logger_name;
 
-    /** @var PLogger Phalcon Logger object that actually handles logging process */
-    private PLogger $logger;
+    /** @var PhalconLogger Phalcon Logger object that actually handles logging process */
+    private PhalconLogger $logger;
 
     /**
      * This variable can be used when you want to add more data to all messages.
@@ -63,57 +71,66 @@ class Logger implements LoggerInterface
 
     /**
      * Logger constructor.
-     * @param $logger_name
-     * @throws \ErrorException
+     * @param string $logger_name
+     * @throws ErrorException
      */
-    private function __construct($logger_name)
+    private function __construct(string $logger_name)
     {
         try {
-            $adapter = new LoggerAdapter(LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log', ['mode' => 'a']);
-            $this->logger = new PLogger('messages',['main' => $adapter,]);
+            $path = LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time());
+            $adapter = new Stream($path);
+            $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             switch (Config::get('app.env')) {
                 case 'pro':
-                    $this->logger->setLogLevel(PLogger::ERROR);
+                    $this->logger->setLogLevel(PhalconLogger::ERROR);
                     break;
                 case 'dev':
-                    $this->logger->setLogLevel(PLogger::DEBUG);
+                    $this->logger->setLogLevel(PhalconLogger::DEBUG);
                     break;
             }
-            $tag = $this->tag ?? 'no_tag';
+            chmod($path, 0777);
+            $tracker = Config::get('app.request_tracker') ?? time();
+            $tag = $this->tag;
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
-            $this->prefix = "[$tag][$ip][$route]";
+            $this->prefix = "[$tracker][$tag][$ip][$route]";
         } catch (\Exception $e) {
-            throw new \ErrorException('Cant create Logger: ' . $logger_name . ' :' . $e->getMessage());
+            throw new ErrorException('Cant create Logger: ' . $logger_name . ' :' . $e->getMessage());
         }
-    }
-
-    /**
-     * Here new logger will be created if there was no logger with that logger_name was created before.
-     * @param string|null $logger_name
-     */
-    public static function create(string $logger_name = null): void
-    {
-        self::$loggers[$logger_name] ??= new Logger($logger_name ?? 'mirage');
     }
 
     /**
      * Get single instance of Logger Object
      * @param string|null $logger_name
-     * @return LoggerAdapter
+     * @param string|null $tag
+     * @return PhalconLogger
+     * @throws ErrorException
      */
-    protected static function instance(string $logger_name = null): PLogger
+    public static function getInstance(?string $logger_name = null, ?string $tag = null): PhalconLogger
     {
-        if (!isset(self::$logger_name) || !isset(self::$loggers[$logger_name])) {
-            self::create($logger_name);
+        $logger_name ??= self::$default_logger_name;
+        if (!isset(self::$loggers[$logger_name])) {
+            self::$loggers[$logger_name] = new Logger($logger_name);
+            self::$loggers[$logger_name]->setLoggerName($logger_name);
+            self::$loggers[$logger_name]->setTag($tag ?? 'NT');
         }
-        return self::$loggers[$logger_name]->logger;
+        return self::$loggers[$logger_name];
+    }
+
+    /**
+     * Set default logger. After this each time L class called it would use this logger.
+     * @param string|null $logger_name
+     */
+    public static function setDefaultLogger(?string $logger_name = null): void
+    {
+        self::$default_logger_name = $logger_name ?? 'mirage';
     }
 
     /**
      * This function just reduce length of message
      * @param $msg
      * @return string
+     * @throws ErrorException
      */
     private function shortMsg($msg): string
     {
@@ -125,33 +142,47 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param $tag
-     * @return string
-     * @throws \ErrorException
+     * @param string $logger_name
+     * @return Logger
      */
-    public static function setTag($tag): string
+    public function setLoggerName(string $logger_name): self
     {
-        if (!isset(self::$logger_name) || !isset(self::$loggers[self::$logger_name])) {
-            throw new \ErrorException('You should first create Logger: ' . self::$logger_name);
-        }
-        self::$loggers[self::$logger_name]->tag = $tag;
+        $this->logger_name = $logger_name;
+
+        return $this;
     }
 
     /**
      * @return string
-     * @throws \ErrorException
      */
-    public static function getTag(): string
+    public function getLoggerName(): string
     {
-        if (!isset(self::$logger_name) || !isset(self::$loggers[self::$logger_name])) {
-            throw new \ErrorException('You should first create Logger: ' . self::$logger_name);
-        }
-        return self::$loggers[self::$logger_name]->tag;
+        return $this->logger_name;
+    }
+
+    /**
+     * @param string $tag
+     * @return Logger
+     */
+    public function setTag(string $tag): self
+    {
+        $this->tag = $tag;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTag(): string
+    {
+        return $this->tag;
     }
 
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function emergency($msg, array $arr = []): void
     {
@@ -161,6 +192,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function alert($msg, array $arr = []): void
     {
@@ -170,6 +202,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function critical($msg, array $arr = []): void
     {
@@ -179,6 +212,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function error($msg, array $arr = []): void
     {
@@ -188,6 +222,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function warning($msg, array $arr = []): void
     {
@@ -197,6 +232,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function notice($msg, array $arr = []): void
     {
@@ -206,6 +242,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function info($msg, array $arr = []): void
     {
@@ -215,6 +252,7 @@ class Logger implements LoggerInterface
     /**
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function debug($msg, array $arr = []): void
     {
@@ -222,31 +260,33 @@ class Logger implements LoggerInterface
     }
 
     /**
+     * @param mixed $level
      * @param string $msg
      * @param array $arr
+     * @throws ErrorException
      */
     public function log($level, $msg, array $arr = []): void
     {
         switch ($level) {
-            case LogLevel::EMERGENCY:
+            case PhalconLogger::EMERGENCY:
                 $this->emergency($msg, $arr);
                 break;
-            case LogLevel::ALERT:
+            case PhalconLogger::ALERT:
                 $this->alert($msg, $arr);
                 break;
-            case LogLevel::CRITICAL:
+            case PhalconLogger::CRITICAL:
                 $this->critical($msg, $arr);
                 break;
-            case LogLevel::ERROR:
+            case PhalconLogger::ERROR:
                 $this->error($msg, $arr);
                 break;
-            case LogLevel::WARNING:
+            case PhalconLogger::WARNING:
                 $this->warning($msg, $arr);
                 break;
-            case LogLevel::NOTICE:
+            case PhalconLogger::NOTICE:
                 $this->notice($msg, $arr);
                 break;
-            case LogLevel::INFO:
+            case PhalconLogger::INFO:
                 $this->info($msg, $arr);
                 break;
             default:

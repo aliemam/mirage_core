@@ -24,6 +24,7 @@
 
 namespace Mirage;
 
+use ErrorException;
 use Mirage\App\Event;
 use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
@@ -54,6 +55,7 @@ class RestApp extends \Phalcon\Mvc\Micro
      * This function boots all frameworks default services and routes and events
      *
      * @return void
+     * @throws ErrorException
      */
     public function bootFrameworkDefaults(): void
     {
@@ -202,9 +204,11 @@ class RestApp extends \Phalcon\Mvc\Micro
      * Run ResFullApp
      *
      * @return void
+     * @throws ErrorException
      */
     public function run(): void
     {
+        Config::set('app.request_tracker', time());
         L::d('[Request STARTS] ' . $_SERVER['REQUEST_URI']);
         L::d('[Request HEADERS] ' . json_encode(\Mirage\Libs\Helper::getHeaders()));
 

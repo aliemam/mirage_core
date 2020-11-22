@@ -24,7 +24,10 @@
 
 namespace Mirage\Libs;
 
-use Phalcon\Translate\Adapter\NativeArray;
+use ErrorException;
+use Phalcon\Translate\Adapter\AdapterInterface;
+use Phalcon\Translate\InterpolatorFactory;
+use Phalcon\Translate\TranslateFactory;
 
 /**
  * Class Translator
@@ -37,11 +40,12 @@ final class Translator
     /** @var Translator Singleton instance */
     private static ?Translator $instance = null;
 
-    /** @var NativeArray Phalcon NativeArray class that actually handles translating */
-    private NativeArray $t;
+    /** @var AdapterInterface Phalcon NativeArray class that actually handles translating */
+    private AdapterInterface $t;
 
     /**
      * Translator constructor.
+     * @throws ErrorException
      */
     private function __construct()
     {
@@ -55,7 +59,9 @@ final class Translator
                 $messages = require_once LANG_DIR . '/' . Config::get('app.callback_lang') . '.php';
             }
 
-            $this->t = new NativeArray(['content' => $messages]);
+            $interpolator = new InterpolatorFactory();
+            $factory      = new TranslateFactory($interpolator);
+            $this->t = $factory->newInstance('array', ['content' => $messages]);
         } catch (\Exception $e) {
             throw new ErrorException('Cant load Translator: ' . $e->getMessage());
         }

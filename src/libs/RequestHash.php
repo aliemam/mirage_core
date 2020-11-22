@@ -7,6 +7,7 @@
  *
  *
  */
+
 /**
  * This is part of Mirage Micro Framework
  *
@@ -15,6 +16,7 @@
 
 namespace Mirage\Libs;
 
+use ErrorException;
 use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Phalcon\Security;
@@ -39,224 +41,108 @@ final class RequestHash
 {
 
     /** @var string this is hash created on client side which is proof that client is real */
-    private static string $client_hash_token;
+    private ?string $client_hash_token;
+
+    /** @var string private key to create hash */
+    private ?string $private_key;
 
     /** @var string version of app */
-    private static string $version;
+    private ?string $version;
 
     /** @var string unix timestamp that request was made */
-    private static string $time;
+    private ?string $time;
 
     /** @var string random 4 digit number generate at the time request will be made */
-    private static string $random;
+    private ?string $random;
 
     /** @var string key for sha256 algorithm */
-    private static string $key;
+    private ?string $key;
+
+    /** @var Cache is cache to store request hash */
+    private Cache $cache;
 
     /**
      * Do not let outer world create this class
+     * @param string $private_key
+     * @param Cache $cache
+     * @throws HttpException
      */
-    private function __construct()
+    public function __construct(string $private_key, Cache $cache)
     {
+        $this->private_key = $private_key;
+        $this->cache = $cache;
+        $headers = Helper::getHeaders();
+        if (!isset($headers['M-HASH'])) {
+            throw new HttpException(Err::REQUEST_HASH_KEY_NOT_FOUND, 'M-HASH is not set.');
+        }
+        if (!isset($headers['M-VERSION'])) {
+            throw new HttpException(Err::REQUEST_HASH_VERSION_NOT_FOUND, 'M-VERSION is not set.');
+        }
+        if (!isset($headers['M-TIME'])) {
+            throw new HttpException(Err::REQUEST_HASH_TIME_NOT_FOUND, 'M-TIME is not set.');
+        }
+        if (!isset($headers['M-RANDOM'])) {
+            throw new HttpException(Err::REQUEST_HASH_RANDOM_NOT_FOUND, 'M-RANDOM is not set.');
+        }
+
+        $this->client_hash_token = $headers['M-HASH'];
+        $this->version = $headers['M-VERSION'];
+        $this->time = $headers['M-TIME'];
+        $this->random = $headers['M-RANDOM'];
     }
 
     /**
-     * In case of error occurred, this function handle that error based on $bypass_error variable.
-     * Variable $throw_exception_on_error controls action of throwing error and terminate process
-     * if anything goes wrong.
-     * So do not set it to true unless you know what you are doing. This is matter of app security.
-     * @param HttpException $http
-     * @param bool $throw_exception_on_error
+     * Checking for valid request from client.
      * @return void
-     * @throws HttpException
-     * @throws \ErrorException
+     * @throws ErrorException
      */
-    private static function error(HttpException $http, bool $throw_exception_on_error): void
+    private function checkForInvalidRequest(): void
     {
-        if (!$throw_exception_on_error) {
-            L::d($http->getMessage());
-            return;
-        } else {
-            (new Security())->hash(rand());
-            throw $http;
-        }
-    }
-
-    /**
-     * Checking for valid request from client.
-     * @param bool $throw_exception_on_error if this variable was set to false,
-     * on any authentication failure, this class does not throw an error so be careful with it.
-     * @return bool
-     * @throws HttpException
-     * @throws \ErrorException
-     */
-    private static function validateRequestHash(bool $throw_exception_on_error = true): bool
-    {
-        if (!$throw_exception_on_error) {
-            L::w('!!!CHECK AUTH TOKEN WARNING ---> BYPASSED ON ERROR!!!');
-        }
-
-        if (!isset($client_hash_token)) {
-            self::error(new HttpException(
-                Err::REQUEST_HASH_CLIENT_TOKEN_INVALID,
-                'client hash token in invalid.'
-            ), $throw_exception_on_error);
-            return false;
-        }
-
-        $hash_token = self::generateRequestHash();
-        if (!isset($hash_token)) {
-            self::error(
-                new HttpException(Err::REQUEST_HASH_TOKEN_INVALID, 'hash token in invalid.'),
-                $throw_exception_on_error
-            );
-            return false;
-        }
-
-        if ($hash_token !== self::$client_hash_token) {
+        $hash_token = hash('sha256', $this->private_key . $this->version . $this->time . $this->random);
+        if ($hash_token !== $this->client_hash_token) {
             L::d("created hash: $hash_token");
-            L::d("client hash: " . self::$client_hash_token);
-            self::error(
-                new HttpException(Err::REQUEST_HASH_TOKENS_NOT_IDENTICAL, 'hashes are not identical'),
-                $throw_exception_on_error
-            );
-            return false;
+            L::d("client hash: " . $this->client_hash_token);
+            new HttpException(Err::REQUEST_HASH_TOKENS_NOT_IDENTICAL, 'hashes are not identical');
         }
-        L::d('hashes are identical');
-
-        return true;
-    }
-
-    /**
-     * @return string
-     * @throws HttpException
-     * @throws \ErrorException
-     */
-    public static function generateRequestHash(): string
-    {
-        $hash_key = Config::get('app.security.request_hash_key');
-        if (!isset($hash_key)) {
-            self::error(new HttpException(
-                Err::REQUEST_HASH_KEY_NOT_FOUND,
-                'hash key is not set yet. please set hash key first.'
-            ), true);
-            return null;
-        }
-        if (!isset(self::$version)) {
-            self::error(new HttpException(
-                Err::REQUEST_HASH_KEY_NOT_FOUND,
-                'hash key is not set yet. please set hash key first.'
-            ), true);
-            return null;
-        }
-        if (!isset(self::$time)) {
-            self::$time = time();
-        }
-        if (!isset(self::$random)) {
-            self::$random = rand(1000, 9999);
-        }
-
-        L::d("generate request hash with version: " . self::$version . " time:" . self::$time .
-            " random:" . self::$random);
-        return hash('sha256', $hash_key . self::$version . self::$time . self::$random);
-    }
-
-
-    /**
-     * Checking for valid request from client.
-     * @param bool $throw_exception_on_error if this variable was set to false,
-     * on any authentication failure, this class does not throw an error so be careful with it.
-     * @return bool
-     * @throws HttpException
-     * @throws \ErrorException
-     */
-    public static function checkForInvalidRequest(bool $throw_exception_on_error = true): bool
-    {
-        return self::validateRequestHash($throw_exception_on_error);
+        L::d('checkForInvalidRequest passed');
     }
 
     /**
      * Checking if request was duplicated.
-     * @param int $expiration_time it means after how many seconds client can make the same request hash..
-     * @param bool $throw_exception_on_error
-     * @return bool
-     * @throws HttpException
-     * @throws \ErrorException
+     * @param int $rest_sec it means after how many seconds client can make the same request hash..
+     * @return void
+     * @throws ErrorException
      */
-    public static function checkForDuplicatedRequest(int $expiration_time, bool $throw_exception_on_error = true): bool
+    public function checkForDuplicatedRequest(int $rest_sec): void
     {
-        $cache_id = "request_hash:" . self::$client_hash_token;
-        $request_hash = Cache::get($cache_id);
+        $cache_id = "request_hash:" . Helper::getIP() . $this->client_hash_token;
+        $request_hash = $this->cache->get($cache_id);
         if ($request_hash !== null) {
-            self::error(
-                new HttpException(Err::REQUEST_HASH_DUPLICATED, 'request duplicated.'),
-                $throw_exception_on_error
-            );
-            return false;
+            new HttpException(Err::REQUEST_HASH_DUPLICATED, 'request duplicated.');
         }
-
-        Cache::add($cache_id, 0, $expiration_time);
-        return true;
+        $this->cache->add($cache_id, 0, $rest_sec);
+        L::d('checkForDuplicatedRequest passed');
     }
 
     /**
      * Checking some ip makes too many requests in short time .
      * @param int $request_limit_number number of request allowed to call in $duration
      * @param int $duration in seconds
-     * @param bool $throw_exception_on_error
-     * @return bool
-     * @throws \Exception
+     * @return void
+     * @throws ErrorException
      */
-    public static function checkLimitRequestPerIP(
-        int $request_limit_number,
-        int $duration,
-        bool $throw_exception_on_error = true
-    ): bool {
-        $cache_id = "request_hash:" . Helper::getIP();
-        $request_data = Cache::get($cache_id);
-        $count = $request_data ?? 0;
-        Cache::add($cache_id, ++$count, $duration);
-
-        return ($request_data === null || $request_data <= $request_limit_number);
-    }
-
-    /**
-     * @param string $version
-     */
-    public static function setVersion(string $version): void
+    public function checkLimitRequestPerIP(int $request_limit_number, int $duration): void
     {
-        self::$version = $version;
-    }
-
-    /**
-     * @param string $time
-     */
-    public static function setTime(string $time): void
-    {
-        self::$time = $time;
-    }
-
-    /**
-     * @param string $random
-     */
-    public static function setRandom(string $random): void
-    {
-        self::$random = $random;
-    }
-
-    /**
-     * @param string $key
-     */
-    public static function setKey(string $key): void
-    {
-        self::$key = $key;
-    }
-
-    /**
-     * @param string $client_hash_token
-     */
-    public static function setClientHashToken(string $client_hash_token): void
-    {
-        self::$client_hash_token = $client_hash_token;
+        $cache_id = "request_hash:" . Helper::getIP() . $this->client_hash_token;
+        $request_count = $this->cache->get($cache_id);
+        if ($request_count === null) {
+            $this->cache->add($cache_id, 1, $duration);
+            L::d('checkLimitRequestPerIP first request');
+            return;
+        }
+        if ($request_count > $request_limit_number) {
+            new HttpException(Err::REQUEST_HASH_IP_CALL_LIMIT, 'request reach its limit.');
+        }
+        $this->cache->increment($cache_id);
     }
 }

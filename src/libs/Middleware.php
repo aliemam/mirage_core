@@ -25,7 +25,7 @@
 namespace Mirage\Libs;
 
 use Mirage\Http\Request;
-use Mirage\RestApi;
+use Mirage\RestApp;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Events\Event;
 use Phalcon\Mvc\Micro\MiddlewareInterface;
@@ -45,11 +45,11 @@ class Middleware implements MiddlewareInterface
     /**
      * This function check the middleware event before phalcon execute route controller
      * @param Event $event
-     * @param RestApi $app
+     * @param RestApp $app
      * @return bool
      * @throws \ErrorException
      */
-    public function beforeExecuteRoute(Event $event, RestApi $app)
+    public function beforeExecuteRoute(Event $event, RestApp $app)
     {
         foreach (Request::getMiddlewares($app->router) as $middleware) {
             if ($middleware->check() === false && $middleware::TERMINATE) {
