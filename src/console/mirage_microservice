@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+base_dir=$(pwd)
+if [ -z "$1" ]
+  then
+    echo "Please give me project name"
+    exit 0
+fi
+pn=${1##*/}
+git clone https://github.com/aliemam/mirage_microservice.git
+mv mirage_microservice "$pn"
+cd "$pn" || echo "$pn is not valid path" || exit
+rm -rf .git
+git init
+git remote add origin git@git.offer.market:$1
+git add .
+git commit -m "Initial commit"
+git push -u origin master

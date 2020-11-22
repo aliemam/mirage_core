@@ -28,10 +28,12 @@ use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
+use Phalcon\Mvc\Router\RouteInterface;
 
 /**
  * Class Request
  *
+ * TODO: Not Completed
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
@@ -40,10 +42,10 @@ final class Request extends \Phalcon\Http\Request
     /**
      * Get Matched Route Object
      *
-     * @param \Phalcon\Mvc\Router\RouteInterface $router
+     * @param RouteInterface $router
      * @return void
      */
-    public static function getRoute(\Phalcon\Mvc\Router\RouteInterface $router)
+    public static function getRoute(RouteInterface $router)
     {
         $route_path = $router->getMatchedRoute()->getPattern();
         return RoutesCollection::getCollections()[$route_path] ?? null;
@@ -52,14 +54,14 @@ final class Request extends \Phalcon\Http\Request
     /**
      * Get Middlewares of Matched Route Object
      *
-     * @param \Phalcon\Mvc\Router\RouteInterface $router
+     * @param RouteInterface $router
      * @return void
      */
-    public static function getMiddlewares(\Phalcon\Mvc\Router\RouteInterface $router)
+    public static function getMiddlewares(RouteInterface $router)
     {
         $route_path = $router->getMatchedRoute()->getPattern();
-        $route = RoutesCollection::getCollections()[$route_path] ?? null;
-        return $route->getMiddlewares() ?? [];
+//        $route = RoutesCollection::getCollections()[$route_path] ?? null;
+//        return $route->getMiddlewares() ?? [];
     }
 
     /**

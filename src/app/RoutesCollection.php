@@ -50,8 +50,7 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
         $collection_handler = $collection->getCollectionHandler();
         $collection_routes = $collection->getCollectionRoutes();
         if (!isset($collection_prefix)) {
-            throw new ErrorException("[ERROR][100] Collection with no prefix has error: 
-            prefix should be defined.");
+            throw new ErrorException("[ERROR][100] Collection with no prefix has error: prefix should be defined.");
         }
         if (!isset($collection_handler)) {
             throw new ErrorException("[ERROR][100] Collection with prefix $collection_prefix has error: 
@@ -128,13 +127,14 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     /**
      * Set the value of collection_handler
      *
-     * @param Controller $collection_handler
+     * @param string $collection_handler
+     * @param bool $lazy
      * @return $this
      */
-    protected function setCollectionHandler(Controller $collection_handler): self
+    protected function setCollectionHandler(string $collection_handler, bool $lazy = false): self
     {
         $this->collection_handler = $collection_handler;
-        $this->setHandler($collection_handler);
+        $this->setHandler($collection_handler, $lazy);
 
         return $this;
     }
@@ -222,7 +222,7 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
     public static function healthCheckCollection()
     {
         $collection = new RoutesCollection();
-        $collection->setCollectionHandler('Mirage\App\Controller')
+        $collection->setCollectionHandler('Mirage\App\Controller', true)
             ->setCollectionPrefix('/micro_service')
             ->setCollectionRoutes([
                 [

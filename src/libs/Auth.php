@@ -24,6 +24,7 @@
 
 namespace Mirage\Libs;
 
+use ErrorException;
 use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Phalcon\Security;
@@ -31,6 +32,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
+use stdClass;
 
 /**
  * Class Auth
@@ -42,7 +44,7 @@ use Firebase\JWT\SignatureInvalidException;
 class Auth
 {
     /** @var stdClass jwt token stores in this variable */
-    private static stdClass $jwt_payload;
+    private static ?stdClass $jwt_payload;
 
     /**
      * In case of error occurred, this function handle that error based on $bypass_error variable.
@@ -53,7 +55,7 @@ class Auth
      * @param bool $throw_exception_on_error
      * @return void
      * @throws HttpException
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     private static function error(HttpException $http, bool $throw_exception_on_error): void
     {
@@ -67,11 +69,11 @@ class Auth
 
     /**
      * @param array $payload This is payload body of jwt token.
-     * @return string
+     * @return string|null
      * @throws HttpException
-     * @throws \ErrorException
+     * @throws ErrorException
      */
-    public static function generateJWTToken(array $payload): string
+    public static function generateToken(array $payload): ?string
     {
         $hash_key = Config::get('app.security.jwt_hash_key');
         if (!isset($hash_key)) {
@@ -85,8 +87,7 @@ class Auth
             return null;
         }
         L::d('generate jwt with payload: ' . json_encode($payload));
-        $jwt_token = JWT::encode($payload, $hash_key, 'HS256');
-        return $jwt_token;
+        return JWT::encode($payload, $hash_key, 'HS256');
     }
 
     /**
@@ -95,9 +96,9 @@ class Auth
      * on any authentication failure, this class does not throw an error so be careful with it.
      * @return bool
      * @throws HttpException
-     * @throws \ErrorException
+     * @throws ErrorException
      */
-    public static function checkJWTToken(string $jwt_token, bool $throw_exception_on_error = true): bool
+    public static function checkToken(string $jwt_token, bool $throw_exception_on_error = true): bool
     {
         L::d("checking token: $jwt_token");
         if (!$throw_exception_on_error) {
@@ -133,13 +134,19 @@ class Auth
             return false;
         } catch (SignatureInvalidException $e) {
             self::error(
-                new HttpException(Err::AUTH_JWT_SIGNATURE_INVALID, 'JWT signature is invalid: ' . $e->getMessage()),
+                new HttpException(
+                    Err::AUTH_JWT_SIGNATURE_INVALID,
+                    'JWT signature is invalid: ' . $e->getMessage()
+                ),
                 $throw_exception_on_error
             );
             return false;
         } catch (BeforeValidException $e) {
             self::error(
-                new HttpException(Err::AUTH_JWT_BEFORE_VALID, 'JWT Before valid: ' . $e->getMessage()),
+                new HttpException(
+                    Err::AUTH_JWT_BEFORE_VALID,
+                    'JWT Before valid: ' . $e->getMessage()
+                ),
                 $throw_exception_on_error
             );
             return false;
@@ -165,9 +172,9 @@ class Auth
     /**
      * Getting processed and check jwt token
      * @return stdClass
-     * @throws \ErrorException
+     * @throws ErrorException
      */
-    public static function getJWTPayload()
+    public static function getPayload()
     {
         L::d("Get jwt payload: " . json_encode(self::$jwt_payload));
         return self::$jwt_payload;

@@ -26,6 +26,7 @@
 namespace Mirage\Libs;
 
 use Dotenv\Dotenv;
+use ErrorException;
 
 /**
  * Class Config
@@ -73,6 +74,7 @@ final class Config
      * @param string $params In config chain this param is something like co1.co2.co3... .
      * @param mixed $value The value that should save in configs
      * @return void
+     * @throws ErrorException
      */
     public static function set(string $params, $value): void
     {
@@ -94,6 +96,7 @@ final class Config
      * This function gets $params in format of c1.c2.c3 and value of mixed. Then it returns value of config[c1][c2][c3].
      * @param string $params In config chain this param is something like co1.co2.co3... .
      * @return array|bool|mixed
+     * @throws ErrorException
      */
     public static function get(string $params)
     {

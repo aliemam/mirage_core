@@ -24,11 +24,13 @@
 
 namespace Mirage;
 
+use ErrorException;
 use Mirage\App\Event;
 use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
+use Mirage\Libs\Config;
 use Mirage\Libs\L;
 
 /**
@@ -46,14 +48,13 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         // create container
         $this->setDi(new \Phalcon\Di\FactoryDefault());
-        
-        
     }
 
     /**
      * This function boots all frameworks default services and routes and events
      *
      * @return void
+     * @throws ErrorException
      */
     public function bootFrameworkDefaults(): void
     {
@@ -76,9 +77,8 @@ class RestApp extends \Phalcon\Mvc\Micro
             return new \Phalcon\Mvc\Model\Transaction\Manager();
         });
         $this->addService(Services::EVENTS_MANAGER, function () {
-            $manager = new \Phalcon\Events\Manager();
             // TODO:: here we should attach some default events
-            return $manager;
+            return new \Phalcon\Events\Manager();
         });
 
         // add framework default route
@@ -203,9 +203,11 @@ class RestApp extends \Phalcon\Mvc\Micro
      * Run ResFullApp
      *
      * @return void
+     * @throws ErrorException
      */
     public function run(): void
     {
+        Config::set('app.request_tracker', time());
         L::d('[Request STARTS] ' . $_SERVER['REQUEST_URI']);
         L::d('[Request HEADERS] ' . json_encode(\Mirage\Libs\Helper::getHeaders()));
 
@@ -222,16 +224,6 @@ class RestApp extends \Phalcon\Mvc\Micro
 
         $this->after(function () {
             $this->getReturnedValue()->sendResponse();
-
-            // if (\Mirage\Libs\Config::get('app.env') === 'dev') {
-            //     $profiles = $this->getDi()->getShared(Services::PROFILE)->getProfiles();
-            //     foreach ($profiles as $profile) {
-            //         echo 'SQL Statement: ', $profile->getSQLStatement(), '\n';
-            //         echo 'Start Time: ', $profile->getInitialTime(), '\n';
-            //         echo 'Final Time: ', $profile->getFinalTime(), '\n';
-            //         echo 'Total Elapsed Time: ', $profile->getTotalElapsedSeconds(), '\n';
-            //     }
-            // }
         });
 
         $this->notFound(function () {
@@ -241,6 +233,6 @@ class RestApp extends \Phalcon\Mvc\Micro
             );
         });
 
-        $this->handle();
+        $this->handle($_SERVER['REQUEST_URI']);
     }
 }

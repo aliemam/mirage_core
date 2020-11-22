@@ -75,7 +75,7 @@ class Acl
      * @return Acl
      * @throws ErrorException
      */
-    public static function get(): Acl
+    public static function get(): ?Acl
     {
         $instance = self::getInstance();
         $cache_id = Helper::getUniqueId('mirage', 'acl');
@@ -148,7 +148,7 @@ class Acl
      * @return mixed
      * @throws ErrorException
      */
-    public static function isAllowed(string $role_name, string $resource_name, string $operation_name): void
+    public static function isAllowed(string $role_name, string $resource_name, string $operation_name)
     {
         $instance = self::getInstance();
         L::d("Checking role: $role_name in resource: $resource_name and operation: $operation_name");

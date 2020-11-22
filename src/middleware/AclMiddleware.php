@@ -72,7 +72,7 @@ class AclMiddleware extends Middleware
     {
         if (!isset($this->token)) {
             L::w('Token is not set for this middleware so try to get token from Auth class');
-            $this->setToken(Auth::getJWTPayload());
+            $this->setToken(Auth::getPayload());
             if (!isset($this->token)) {
                 throw new HttpException(Err::ACL_ACCESS_DENIED, 'cant find token so checking acl is useless');
             }

@@ -155,7 +155,7 @@ class Helper
      * @param $key
      * @return string
      */
-    public static function getHeader(string $key): string
+    public static function getHeader(string $key): ?string
     {
         $headers = self::getHeaders();
         return (isset($headers[strtolower($key)]) ? $headers[strtolower($key)] : null);
@@ -177,7 +177,7 @@ class Helper
      * @param $str
      * @return string
      */
-    public static function jsonErrorMsg(string $str): string
+    public static function jsonErrorMsg(string $str): ?string
     {
         switch (json_last_error()) {
             case JSON_ERROR_NONE:

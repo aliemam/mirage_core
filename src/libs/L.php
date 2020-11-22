@@ -24,6 +24,8 @@
 
 namespace Mirage\Libs;
 
+use ErrorException;
+
 /**
  * Class L
  * This class is just a wrapper on Logger class to simplify calling logger everywhere in code
@@ -33,73 +35,73 @@ final class L extends Logger
 {
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function em($message): void
     {
-        self::instance()->emergency($message);
+        self::getinstance()->emergency($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function a($message): void
     {
-        self::instance()->alert($message);
+        self::getinstance()->alert($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function c($message): void
     {
-        self::instance()->critical($message);
+        self::getinstance()->critical($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function e($message): void
     {
-        self::instance()->error($message);
+        self::getinstance()->error($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function w($message): void
     {
-        self::instance()->warning($message);
+        self::getinstance()->warning($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function n($message): void
     {
-        self::instance()->notice($message);
+        self::getinstance()->notice($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function i($message): void
     {
-        self::instance()->info($message);
+        self::getinstance()->info($message);
     }
 
     /**
      * @param $message
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function d($message): void
     {
-        self::instance()->debug($message);
+        self::getinstance()->debug($message);
     }
 }
