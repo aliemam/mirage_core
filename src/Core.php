@@ -106,12 +106,14 @@ class Core
     public static function shutdownHandler(): void
     {
         $error = error_get_last();
-        Core::errorHandler(
-            (int) $error['type'],
-            (string) $error['message'],
-            (string) $error['file'],
-            (int) $error['line']
-        );
+        if(isset($error)) {
+            Core::errorHandler(
+                (int)$error['type'],
+                (string)$error['message'],
+                (string)$error['file'],
+                (int)$error['line']
+            );
+        }
     }
 
     /**

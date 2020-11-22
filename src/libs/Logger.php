@@ -25,10 +25,9 @@
 namespace Mirage\Libs;
 
 use ErrorException;
-use Phalcon\Logger as PLogger;
-use Psr\Log\LogLevel;
+use Phalcon\Logger as PhalconLogger;
 use Psr\Log\LoggerInterface;
-use Phalcon\Logger\Adapter\Stream as LoggerAdapter;
+use Phalcon\Logger\Adapter\Stream;
 
 /**
  * Class Logger
@@ -52,8 +51,8 @@ class Logger implements LoggerInterface
      */
     private string $logger_name;
 
-    /** @var LoggerAdapter Phalcon Logger object that actually handles logging process */
-    private LoggerAdapter $logger;
+    /** @var PhalconLogger Phalcon Logger object that actually handles logging process */
+    private PhalconLogger $logger;
 
     /**
      * This variable can be used when you want to add more data to all messages.
@@ -79,14 +78,14 @@ class Logger implements LoggerInterface
     {
         try {
             $path = LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time());
-            $this->logger =
-                new LoggerAdapter($path, ['mode' => 'a']);
+            $adapter = new Stream($path);
+            $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             switch (Config::get('app.env')) {
                 case 'pro':
-                    $this->logger->setLogLevel(PLogger::ERROR);
+                    $this->logger->setLogLevel(PhalconLogger::ERROR);
                     break;
                 case 'dev':
-                    $this->logger->setLogLevel(PLogger::DEBUG);
+                    $this->logger->setLogLevel(PhalconLogger::DEBUG);
                     break;
             }
             chmod($path, 0777);
@@ -104,10 +103,10 @@ class Logger implements LoggerInterface
      * Get single instance of Logger Object
      * @param string|null $logger_name
      * @param string|null $tag
-     * @return LoggerAdapter
+     * @return PhalconLogger
      * @throws ErrorException
      */
-    public static function getInstance(?string $logger_name = null, ?string $tag = null): LoggerAdapter
+    public static function getInstance(?string $logger_name = null, ?string $tag = null): PhalconLogger
     {
         $logger_name ??= self::$default_logger_name;
         if (!isset(self::$loggers[$logger_name])) {
@@ -269,25 +268,25 @@ class Logger implements LoggerInterface
     public function log($level, $msg, array $arr = []): void
     {
         switch ($level) {
-            case LogLevel::EMERGENCY:
+            case PhalconLogger::EMERGENCY:
                 $this->emergency($msg, $arr);
                 break;
-            case LogLevel::ALERT:
+            case PhalconLogger::ALERT:
                 $this->alert($msg, $arr);
                 break;
-            case LogLevel::CRITICAL:
+            case PhalconLogger::CRITICAL:
                 $this->critical($msg, $arr);
                 break;
-            case LogLevel::ERROR:
+            case PhalconLogger::ERROR:
                 $this->error($msg, $arr);
                 break;
-            case LogLevel::WARNING:
+            case PhalconLogger::WARNING:
                 $this->warning($msg, $arr);
                 break;
-            case LogLevel::NOTICE:
+            case PhalconLogger::NOTICE:
                 $this->notice($msg, $arr);
                 break;
-            case LogLevel::INFO:
+            case PhalconLogger::INFO:
                 $this->info($msg, $arr);
                 break;
             default:

@@ -25,7 +25,6 @@
 namespace Mirage\Libs;
 
 use ErrorException;
-use Phalcon\Translate\Adapter\NativeArray;
 use Phalcon\Translate\Adapter\AdapterInterface;
 use Phalcon\Translate\InterpolatorFactory;
 use Phalcon\Translate\TranslateFactory;

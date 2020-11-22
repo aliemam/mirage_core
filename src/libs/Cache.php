@@ -51,14 +51,14 @@ class Cache
     private static array $default_cache_config = [];
 
     /**
-     * @var string each cache has name that can be identified by that name
-     */
-    private string $cache_name;
-
-    /**
      * @var Cache Phalcon Logger object that actually handles logging process
      */
     private Cache $cache;
+
+    /**
+     * @var string each cache has name that can be identified by that name
+     */
+    private string $cache_name;
 
     /**
      * @var array stores cache config which needed to connect to cache driver
@@ -97,6 +97,8 @@ class Cache
             $cache_factory = new CacheFactory($adapter_factory);
             $cache_config['prefix'] .= $cache_name;
             $this->cache = $cache_factory->load($cache_config);
+            $this->cache_name = $cache_name;
+            $this->cache_config = $cache_config;
         } catch (\Exception $e) {
             throw new ErrorException('Cant create Cache: ' . $cache_name . ' :' . $e->getMessage());
         }
@@ -115,8 +117,6 @@ class Cache
         $cache_config ??= self::$default_cache_config;
         if (!isset(self::$caches[$cache_name])) {
             self::$caches[$cache_name] = new Cache($cache_name, $cache_config);
-            self::$caches[$cache_name]->setCacheName($cache_name);
-            self::$caches[$cache_name]->setCacheConfig($cache_config);
         }
         return self::$caches[$cache_name];
     }
@@ -288,5 +288,21 @@ class Cache
         }
 
         return $results;
+    }
+
+    /**
+     * This function create cache for all cache config in the startup
+     * @throws ErrorException
+     */
+    public static function boot(): void
+    {
+        if (defined('CONFIG_DIR')) {
+            $caches = require_once CONFIG_DIR . '/cache.php';
+            foreach ($caches as $cache_name => $cache_config) {
+                self::$default_cache_name ??= $cache_name;
+                self::$default_cache_config ??= $cache_config;
+                self::getInstance($cache_name, $cache_config);
+            }
+        }
     }
 }

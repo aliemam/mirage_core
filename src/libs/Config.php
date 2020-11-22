@@ -46,9 +46,12 @@ final class Config
      */
     private function __construct()
     {
-        $dotenv = Dotenv::createMutable(APP_DIR);
-        $dotenv->load();
+//        $dotenv = Dotenv::createMutable(MIRAGE_APP_DIR);
+//        $dotenv->load();
         foreach (scandir(CONFIG_DIR) as $config_file) {
+            if (strpos($config_file, '.php') === false) {
+                continue;
+            }
             $path = CONFIG_DIR . '/' . $config_file;
             $config_name = str_replace('.php', '', $config_file);
             if (is_file($path)) {
@@ -65,6 +68,15 @@ final class Config
     {
         self::$instance ??= new Config();
         return self::$instance;
+    }
+
+    /**
+     * Create object instance
+     * @return Config
+     */
+    public static function create(): Config
+    {
+        return self::getInstance();
     }
 
     /**
@@ -111,13 +123,5 @@ final class Config
         }
 
         return $config;
-    }
-
-
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
-        }
     }
 }

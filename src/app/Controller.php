@@ -38,16 +38,4 @@ class Controller extends \Phalcon\Mvc\Controller
     {
         return Response::create(["test" => "ok"]);
     }
-
-    /**
-     * destruct everything.
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        foreach ($this as &$value) {
-            $value = null;
-        }
-    }
 }
