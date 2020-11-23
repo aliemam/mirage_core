@@ -55,7 +55,7 @@ final class Config
             $path = CONFIG_DIR . '/' . $config_file;
             $config_name = str_replace('.php', '', $config_file);
             if (is_file($path)) {
-                $this->configs[$config_name] = require_once $path;
+                $this->configs[$config_name] = require $path;
             }
         }
     }

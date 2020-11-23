@@ -47,6 +47,11 @@ class Logger implements LoggerInterface
     private static string $default_logger_name = 'mirage';
 
     /**
+     * @var array each logger has config.
+     */
+    private static array $default_logger_config = [];
+
+    /**
      * @var string each logger has name that can be identified by that name
      */
     private string $logger_name;
@@ -55,14 +60,10 @@ class Logger implements LoggerInterface
     private PhalconLogger $logger;
 
     /**
-     * This variable can be used when you want to add more data to all messages.
-     * At the end each massage will be in this format:
-     * "[$time][$type] [$tag][$ip][$route] $prefix$message"
-     * If $tag was provided by developer. developer can track that string in logs.
-     * @var string
+     * @var array stores logger config which needed to connect to cache driver
      */
-    private string $tag;
-
+    private array $logger_config;
+    
     /**
      * Value will be prepended to message before logging. the full message would be "$prefix$message"
      * @var string
@@ -74,27 +75,22 @@ class Logger implements LoggerInterface
      * @param string $logger_name
      * @throws ErrorException
      */
-    private function __construct(string $logger_name)
+    private function __construct(string $logger_name, array $logger_config)
     {
+        $this->logger_name = $logger_name;
+        $this->logger_config = $logger_config;
         try {
-            $path = LOG_DIR . '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
-            fopen($path, 'a+');
-            chmod($path, 0777);
+            $path = $logger_config['path'] ?? LOG_DIR;
+            $tag = $logger_config['tag'] ?? 'NT';
+            $path .= '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
+//            fopen($path, 'a+');
+//            chmod($path, 0777);
+
             $adapter = new Stream($path);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
-            switch (Config::get('app.env')) {
-                case 'pro':
-                    $this->logger->setLogLevel(PhalconLogger::ERROR);
-                    break;
-                case 'dev':
-                    $this->logger->setLogLevel(PhalconLogger::DEBUG);
-                    break;
-            }
-            $this->logger_name = $logger_name;
-            $this->tag = $tag ?? 'NT';
+            $this->logger->setLogLevel($logger_config['level'] ?? PhalconLogger::DEBUG);
 
             $tracker = Config::get('app.request_tracker') ?? time();
-            $tag = $this->tag;
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
             $this->prefix = "[$tracker][$tag][$ip][$route]";
@@ -106,15 +102,16 @@ class Logger implements LoggerInterface
     /**
      * Get single instance of Logger Object
      * @param string|null $logger_name
-     * @param string|null $tag
+     * @param array|null $logger_config
      * @return Logger
      * @throws ErrorException
      */
-    public static function getInstance(?string $logger_name = null, ?string $tag = null): self
+    public static function getInstance(?string $logger_name = null, ?array $logger_config = null): Logger
     {
         $logger_name ??= self::$default_logger_name;
+        $logger_config ??= self::$default_logger_config;
         if (!isset(self::$loggers[$logger_name])) {
-            self::$loggers[$logger_name] = new Logger($logger_name);
+            self::$loggers[$logger_name] = new Logger($logger_name, $logger_config);
         }
         return self::$loggers[$logger_name];
     }
@@ -125,6 +122,9 @@ class Logger implements LoggerInterface
      */
     public static function setDefaultLogger(?string $logger_name = null): void
     {
+        if(!isset(self::$loggers[$logger_name])){
+            throw new ErrorException("There is no logger name: $logger_name");
+        }
         self::$default_logger_name = $logger_name ?? 'mirage';
     }
 
@@ -136,10 +136,10 @@ class Logger implements LoggerInterface
      */
     private function shortMsg($msg): string
     {
-        if (Config::get('app.log_mode') == 'complete') {
+        if (!isset($this->logger_config['max_length'])) {
             return $msg;
         } else {
-            return substr($msg, 0, Config::get('app.log_max_length'));
+            return substr($msg, 0, $this->logger_config['max_length']);
         }
     }
 
@@ -163,22 +163,22 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $tag
+     * @param array $logger_config
      * @return Logger
      */
-    public function setTag(string $tag): self
+    public function setLoggerConfig(array $logger_config): self
     {
-        $this->tag = $tag;
+        $this->logger_config = $logger_config;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getTag(): string
+    public function getLoggerConfig(): string
     {
-        return $this->tag;
+        return $this->logger_config;
     }
 
     /**
@@ -294,6 +294,23 @@ class Logger implements LoggerInterface
             default:
                 $this->debug($msg, $arr);
                 break;
+        }
+    }
+
+    /**
+     * This function create cache for all cache config in the startup
+     * @throws ErrorException
+     */
+    public static function boot(): void
+    {
+        if (defined('CONFIG_DIR') && file_exists(CONFIG_DIR . '/logger.php')) {
+            $loggers = require CONFIG_DIR . '/logger.php';
+            $loggers = array_reverse($loggers);
+            foreach ($loggers as $logger_name => $logger_config) {
+                self::$default_logger_name = $logger_name;
+                self::$default_logger_config = $logger_config;
+                self::getInstance($logger_name, $logger_config);
+            }
         }
     }
 }

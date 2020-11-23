@@ -28,7 +28,7 @@ use ErrorException;
 use Phalcon\Cache\CacheFactory;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Storage\SerializerFactory;
-use Phalcon\Storage\Adapter\Redis;
+use Phalcon\Cache as PhalconCache;
 
 /**
  * Class Cache
@@ -51,9 +51,9 @@ class Cache
     private static array $default_cache_config = [];
 
     /**
-     * @var Cache Phalcon Logger object that actually handles logging process
+     * @var PhalconCache Phalcon Cache object that actually handles logging process
      */
-    private Cache $cache;
+    private PhalconCache $cache;
 
     /**
      * @var string each cache has name that can be identified by that name
@@ -73,10 +73,12 @@ class Cache
      */
     private function __construct(string $cache_name, array $cache_config)
     {
+        $this->cache_name = $cache_name;
+        $this->cache_config = $cache_config;
         try {
             if (!isset($cache_config['adapter']) ||
                 !in_array($cache_config['adapter'], ['redis', 'memcached', 'memory'])) {
-                throw new ErrorException('Driver should be specified [redis|memcached|memory]');
+                throw new ErrorException('Adapter should be specified [redis|memcached|memory]');
             }
             if (!isset($cache_config['serializer']) ||
                 !in_array(
@@ -98,8 +100,6 @@ class Cache
             $cache_factory = new CacheFactory($adapter_factory);
             $cache_config['prefix'] .= $cache_name;
             $this->cache = $cache_factory->load($cache_config);
-            $this->cache_name = $cache_name;
-            $this->cache_config = $cache_config;
         } catch (\Exception $e) {
             throw new ErrorException('Cant create Cache: ' . $cache_name . ' :' . $e->getMessage());
         }
@@ -128,6 +128,9 @@ class Cache
      */
     public static function setDefaultCache(string $cache_name = null): void
     {
+        if(!isset(self::$caches[$cache_name])){
+            throw new ErrorException("There is no cache name: $cache_name");
+        }
         self::$default_cache_name = $cache_name ?? 'mirage';
     }
 
@@ -178,7 +181,7 @@ class Cache
      */
     public function add(string $key, $value, int $expiration = 31536000): void
     {
-        if (!Config::get('app.cache_enable')) {
+        if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not add!!!");
             return;
         }
@@ -191,7 +194,7 @@ class Cache
         $data = new \stdClass();
         $data->data = $value;
         $data->time = $now;
-        $this->cache->save($key, $data, $expiration);
+        $this->cache->set($key, $data, $expiration);
     }
 
     /**
@@ -201,13 +204,13 @@ class Cache
      */
     public function get(string $key)
     {
-        if (!Config::get('app.cache_enable')) {
+        if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
             return null;
         }
 
         $data = $this->cache->get($key);
-        if (!isset($data)) {
+        if ($data === null) {
             L::w("Trying to get key: $key from cache which is not exist");
             return null;
         }
@@ -224,7 +227,7 @@ class Cache
      */
     public function getByPattern(string $pattern): array
     {
-        if (!Config::get('app.cache_enable')) {
+        if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
             return [];
         }
@@ -250,7 +253,7 @@ class Cache
      */
     public function delete(string $key): bool
     {
-        if (!Config::get('app.cache_enable')) {
+        if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
             return false;
         }
@@ -271,7 +274,7 @@ class Cache
      */
     public function deleteByPattern(string $pattern): bool
     {
-        if (!Config::get('app.cache_enable')) {
+        if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
             return false;
         }
@@ -297,11 +300,12 @@ class Cache
      */
     public static function boot(): void
     {
-        if (defined('CONFIG_DIR')) {
-            $caches = require_once CONFIG_DIR . '/cache.php';
+        if (defined('CONFIG_DIR') && file_exists(CONFIG_DIR . '/cache.php')) {
+            $caches = require CONFIG_DIR . '/cache.php';
+            $caches = array_reverse($caches);
             foreach ($caches as $cache_name => $cache_config) {
-                self::$default_cache_name ??= $cache_name;
-                self::$default_cache_config ??= $cache_config;
+                self::$default_cache_name = $cache_name;
+                self::$default_cache_config = $cache_config;
                 self::getInstance($cache_name, $cache_config);
             }
         }

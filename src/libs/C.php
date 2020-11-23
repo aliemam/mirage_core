@@ -33,32 +33,62 @@ use ErrorException;
  */
 final class C extends Cache
 {
-    public static function defaultCache(string $default_cache_name)
+    /**
+     * @param string $default_cache_name
+     * @throws ErrorException
+     */
+    public static function defaultCache(string $default_cache_name): void
     {
         self::setDefaultCache($default_cache_name);
     }
 
-    public static function a(string $key, $value, string $time = '1 year')
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param string $time
+     * @throws ErrorException
+     */
+    public static function a(string $key, $value, string $time = '1 year'): void
     {
         self::getInstance()->add($key, $value, $time);
     }
 
+    /**
+     * @param string $key
+     * @return mixed|null
+     * @throws ErrorException
+     */
     public static function g(string $key)
     {
-        self::getInstance()->get($key);
+        return self::getInstance()->get($key);
     }
 
-    public static function gbp(string $patter)
+    /**
+     * @param string $patter
+     * @return array
+     * @throws ErrorException
+     */
+    public static function gbp(string $patter): array
     {
-        self::getInstance()->getByPattern($patter);
+        return self::getInstance()->getByPattern($patter);
     }
 
-    public static function d(string $key)
+    /**
+     * @param string $key
+     * @return bool
+     * @throws ErrorException
+     */
+    public static function d(string $key): bool
     {
         self::getInstance()->delete($key);
     }
 
-    public static function dbp(string $patter)
+    /**
+     * @param string $patter
+     * @return bool
+     * @throws ErrorException
+     */
+    public static function dbp(string $patter): bool
     {
         self::getInstance()->deleteByPattern($patter);
     }

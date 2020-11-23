@@ -30,6 +30,7 @@ use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
+use Mirage\Libs\C;
 use Mirage\Libs\Cache;
 use Mirage\Libs\Config;
 use Mirage\Libs\L;
@@ -226,16 +227,6 @@ class RestApp extends \Phalcon\Mvc\Micro
         });
 
         $this->after(function () {
-            if (Config::get('app.env') === 'dev') {
-//                $profiles = $this->getDi()->getShared(Services::PROFILE)->getProfiles();
-//                foreach ($profiles as $profile) {
-//                    L::d('SQL Statement: ', $profile->getSQLStatement());
-//                    L::d('Start Time: ', $profile->getInitialTime());
-//                    L::d('Final Time: ', $profile->getFinalTime());
-//                    L::d('Total Elapsed Time: ', $profile->getTotalElapsedSeconds());
-//                }
-            }
-            $res = Cache::
             $result = $this->getReturnedValue();
             L::i("Result: " . json_encode($result));
             $result->sendResponse();
