@@ -26,9 +26,7 @@ namespace Mirage\App;
 
 use ErrorException;
 use Mirage\Libs\Helper;
-use Mirage\Libs\Middleware;
 use Mirage\Libs\Route;
-use phpDocumentor\Plugin\Scrybe\Converter\ToHtmlInterface;
 
 /**
  * Class RoutesCollection

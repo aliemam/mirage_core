@@ -19,7 +19,7 @@ namespace Mirage\Libs;
 use ErrorException;
 use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
-use Phalcon\Security;
+use Phalcon\Cache\Exception\InvalidArgumentException;
 
 /**
  * Class RequestHash
@@ -102,7 +102,7 @@ final class RequestHash
         if ($hash_token !== $this->client_hash_token) {
             L::d("created hash: $hash_token");
             L::d("client hash: " . $this->client_hash_token);
-            new HttpException(Err::REQUEST_HASH_TOKENS_NOT_IDENTICAL, 'hashes are not identical');
+            throw new HttpException(Err::REQUEST_HASH_TOKENS_NOT_IDENTICAL, 'hashes are not identical');
         }
         L::d('checkForInvalidRequest passed');
     }
@@ -112,13 +112,15 @@ final class RequestHash
      * @param int $rest_sec it means after how many seconds client can make the same request hash..
      * @return void
      * @throws ErrorException
+     * @throws HttpException
+     * @throws InvalidArgumentException
      */
     public function checkForDuplicatedRequest(int $rest_sec): void
     {
         $cache_id = "request_hash:" . Helper::getIP() . $this->client_hash_token;
         $request_hash = $this->cache->get($cache_id);
         if ($request_hash !== null) {
-            new HttpException(Err::REQUEST_HASH_DUPLICATED, 'request duplicated.');
+            throw new HttpException(Err::REQUEST_HASH_DUPLICATED, 'request duplicated.');
         }
         $this->cache->add($cache_id, 0, $rest_sec);
         L::d('checkForDuplicatedRequest passed');
@@ -129,7 +131,7 @@ final class RequestHash
      * @param int $request_limit_number number of request allowed to call in $duration
      * @param int $duration in seconds
      * @return void
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public function checkLimitRequestPerIP(int $request_limit_number, int $duration): void
     {
@@ -141,7 +143,7 @@ final class RequestHash
             return;
         }
         if ($request_count > $request_limit_number) {
-            new HttpException(Err::REQUEST_HASH_IP_CALL_LIMIT, 'request reach its limit.');
+            throw new HttpException(Err::REQUEST_HASH_IP_CALL_LIMIT, 'request reach its limit.');
         }
         $this->cache->increment($cache_id);
     }

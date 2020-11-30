@@ -30,8 +30,6 @@ use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
-use Mirage\Libs\C;
-use Mirage\Libs\Cache;
 use Mirage\Libs\Config;
 use Mirage\Libs\L;
 

@@ -25,6 +25,7 @@
 namespace Mirage\Libs;
 
 use ErrorException;
+use Phalcon\Cache\Exception\InvalidArgumentException;
 
 /**
  * Class C
@@ -45,18 +46,18 @@ final class C extends Cache
     /**
      * @param string $key
      * @param mixed $value
-     * @param string $time
-     * @throws ErrorException
+     * @param int $expiration
+     * @throws ErrorException|InvalidArgumentException
      */
-    public static function a(string $key, $value, string $time = '1 year'): void
+    public static function a(string $key, $value, int $expiration = 31536000): void
     {
-        self::getInstance()->add($key, $value, $time);
+        self::getInstance()->add($key, $value, $expiration);
     }
 
     /**
      * @param string $key
      * @return mixed|null
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public static function g(string $key)
     {
@@ -76,11 +77,11 @@ final class C extends Cache
     /**
      * @param string $key
      * @return bool
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public static function d(string $key): bool
     {
-        self::getInstance()->delete($key);
+        return self::getInstance()->delete($key);
     }
 
     /**
@@ -90,7 +91,7 @@ final class C extends Cache
      */
     public static function dbp(string $patter): bool
     {
-        self::getInstance()->deleteByPattern($patter);
+        return self::getInstance()->deleteByPattern($patter);
     }
 
 }

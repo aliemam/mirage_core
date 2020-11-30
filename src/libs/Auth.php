@@ -62,7 +62,7 @@ class Auth
         if (!$throw_exception_on_error) {
             L::d($http->getMessage());
         } else {
-            (new Security())->hash(rand());
+            (new Security())->hash((string)rand());
             throw $http;
         }
     }

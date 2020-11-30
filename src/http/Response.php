@@ -26,7 +26,6 @@ namespace Mirage\Http;
 
 use Mirage\Constants\Ok;
 use Mirage\Libs\Config;
-use Mirage\Libs\Helper;
 use Mirage\Libs\L;
 use Mirage\Libs\Translator;
 
@@ -37,28 +36,27 @@ use Mirage\Libs\Translator;
  */
 final class Response extends \Phalcon\Http\Response
 {
-    private $has_error = false;
-    private $dev_message;
-    private $dev_code;
-    private $http_code;
+    private bool $has_error = false;
+    private string $dev_message;
+    private string $dev_code;
+    private int $http_code;
     private $output;
 
     /**
      * Create new Response Object
      *
-     * @param [type] $result
+     * @param mixed $result
      * @param string $dev_code
      * @param string $dev_message
      * @param int $cache_exp_time
-     * @return void
+     * @return Response
      */
     public static function create(
         $result = null,
         string $dev_code = Ok::SUCCESS,
         string $dev_message = 'everything is good',
         int $cache_exp_time = null
-    ): Response
-    {
+    ): Response {
         $response = new self;
         $response->has_error = ($dev_code[0] === 'f');
         $tmp = explode('-', $dev_code);

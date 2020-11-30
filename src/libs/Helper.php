@@ -40,7 +40,7 @@ class Helper
      */
     public static function getUniqueId(...$params): string
     {
-        return crc32(str_replace(['{', '}', '[', ']'], ['', '', '', ''], implode(':', $params)));
+        return (string)crc32(str_replace(['{', '}', '[', ']'], ['', '', '', ''], implode(':', $params)));
     }
 
     /**
@@ -153,12 +153,12 @@ class Helper
     /**
      * Returns value of header by key.
      * @param $key
-     * @return string
+     * @return string|null
      */
     public static function getHeader(string $key): ?string
     {
         $headers = self::getHeaders();
-        return (isset($headers[strtolower($key)]) ? $headers[strtolower($key)] : null);
+        return ($headers[strtolower($key)] ?? null);
     }
 
     /**
@@ -175,32 +175,25 @@ class Helper
      * When somewhere in code function json_encode or json_decode was called,
      * you can check if everything went right or not by calling this function.
      * @param $str
-     * @return string
+     * @return string|null
      */
     public static function jsonErrorMsg(string $str): ?string
     {
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
                 return null;
-                break;
             case JSON_ERROR_DEPTH:
                 return 'Maximum stack depth exceeded';
-                break;
             case JSON_ERROR_STATE_MISMATCH:
                 return 'Underflow or the modes mismatch';
-                break;
             case JSON_ERROR_CTRL_CHAR:
                 return 'Unexpected control character found';
-                break;
             case JSON_ERROR_SYNTAX:
                 return 'Syntax error, malformed JSON';
-                break;
             case JSON_ERROR_UTF8:
                 return 'Malformed UTF-8 characters, possibly incorrectly encoded';
-                break;
             default:
                 return 'Unknown error';
-                break;
         }
     }
 
@@ -218,7 +211,6 @@ class Helper
         } elseif ('WIN' == strtoupper(substr(PHP_OS, 0, 3))) {
             $process = @popen('wmic cpu get NumberOfCores', 'rb');
             if (false !== $process) {
-                fgets($process);
                 $numCpus = intval(fgets($process));
                 pclose($process);
             }
@@ -303,8 +295,8 @@ class Helper
      * if it was not exist $default_value was returned.
      *
      * @param string $key
-     * @param string $default_value
-     * @return void
+     * @param string|null $default_value
+     * @return mixed
      */
     public static function env(string $key, string $default_value = null)
     {

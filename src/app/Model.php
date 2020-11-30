@@ -28,7 +28,6 @@ use Mirage\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Phalcon\Mvc\Model as PhalconModel;
-use Phalcon\Mvc\Model\ResultsetInterface as Resultset;
 
 class Model extends PhalconModel implements \JsonSerializable
 {
