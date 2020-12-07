@@ -166,6 +166,11 @@ class RestApp extends \Phalcon\Mvc\Micro
         return $this->services;
     }
 
+    public static function getSrv(string $service_name): mixed
+    {
+        return \Phalcon\Di::getDefault()->getShared($service_name);
+    }
+
     /**
      * Mount new Collection
      *
