@@ -13,20 +13,35 @@ use Mirage\Http\Response;
 class ApiException extends \Exception
 {
 
-    private $response;
-    
-    public function __construct($dev_code, $dev_message)
+    /**
+     * @var Response
+     */
+    private Response $response;
+
+    /**
+     * ApiException constructor.
+     * @param string $dev_code
+     * @param string $dev_message
+     */
+    public function __construct(string $dev_code, string $dev_message)
     {
         parent::__construct($dev_message, (int)substr($dev_code, 1));
-        $this->response = Response::create(null, $dev_message, $dev_code);
+        $this->response = Response::create(null, $dev_code, $dev_message);
     }
 
-    public function getResponse()
+    /**
+     * @return Response
+     */
+    public function getResponse(): Response
     {
         return $this->response;
     }
 
-    public function getDevCode($code)
+    /**
+     * @param string $code
+     * @return string
+     */
+    public function getDevCode(string $code): string
     {
         $start = ((int)strlen((string)$code)) * -1;
         return substr_replace('00000', $code, $start);

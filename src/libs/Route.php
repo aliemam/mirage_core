@@ -46,6 +46,9 @@ class Route
     /** @var string id of route */
     private string $id;
 
+    /** @var string id of route collection */
+    private string $collection_id;
+
     /** @var array route middlewares as each element should be instance of Mirage/Libs/Middleware class */
     private array $middlewares = [];
 
@@ -67,11 +70,12 @@ class Route
         string $action,
         array $middlewares = [],
         array $accesses = []
-    ) {
+    )
+    {
+        $this->id = Helper::getUniqueId($path, $method, $action);
         $this->path = $path;
         $this->method = $method;
         $this->action = $action;
-        $this->id = Helper::getUniqueId($path, $method, $action);
         $this->middlewares = $middlewares;
         $this->accesses = $accesses;
     }
@@ -134,5 +138,25 @@ class Route
     public function getAccesses(): array
     {
         return $this->accesses;
+    }
+
+    /**
+     * Get the Route Collection Id
+     *
+     * @return string
+     */
+    public function getCollectionId(): string
+    {
+        return $this->collection_id;
+    }
+
+    /**
+     * Set the Route Collection Id
+     *
+     * @return string
+     */
+    public function setCollectionId($collection_id): void
+    {
+        $this->collection_id = $collection_id;
     }
 }

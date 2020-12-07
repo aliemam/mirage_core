@@ -49,14 +49,12 @@ final class Response extends \Phalcon\Http\Response
      * @param [type] $result
      * @param string $dev_code
      * @param string $dev_message
-     * @param int $cache_exp_time
      * @return void
      */
     public static function create(
         $result = null,
         string $dev_code = Ok::SUCCESS,
-        string $dev_message = 'everything is good',
-        int $cache_exp_time = null
+        string $dev_message = 'everything is good'
     ): Response
     {
         $response = new self;
@@ -66,7 +64,6 @@ final class Response extends \Phalcon\Http\Response
         $response->dev_code = $tmp[0];
         $response->http_code = $tmp[1];
         $response->output = $result ?? new \stdClass();
-        $response->cache_exp_time = $cache_exp_time;
 
         return $response;
     }
@@ -180,7 +177,7 @@ final class Response extends \Phalcon\Http\Response
 
     /**
      * When a request was option we use this function to send headers.
-     *
+     *Result:
      * @return void
      */
     public function createOptionResponseHeaders(): void
@@ -189,10 +186,6 @@ final class Response extends \Phalcon\Http\Response
         $allow_origins = implode(',', Config::get('app.allow_origins'));
         $allow_methods = implode(',', Config::get('app.allow_methods'));
         $allow_headers = implode(',', Config::get('app.allow_headers'));
-
-        L::d("Allow Origin: " . $allow_origins);
-        L::d("Origin Header: " . $allow_methods);
-        L::d("Origin Header: " . $allow_headers);
 
         $this->setHeader('Access-Control-Allow-Credentials', true);
         $this->setHeader('Access-Control-Allow-Origin', $allow_origins);
@@ -209,12 +202,14 @@ final class Response extends \Phalcon\Http\Response
             $out_put_log = substr(json_encode($this->output), 0, 500);
         }
 
-        $log = "Response: http status code: " . $this->http_code . "- dev code: " . $this->dev_code
-            . " - dev message: " . $this->dev_message . " - real response: " . $out_put_log;
+        $log = "[Request Response Info] $this->http_code  $this->dev_code  $this->dev_message";
+        $log_response = "[Request Response] $out_put_log";
         if ($this->has_error) {
             L::e($log);
+            L::e($log_response);
         } else {
             L::i($log);
+            L::i($log_response);
         }
 
         // create response object

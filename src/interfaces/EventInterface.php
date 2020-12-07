@@ -22,36 +22,16 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\Middleware;
+namespace Mirage\App;
 
-use Mirage\Exceptions\HttpException;
-use Mirage\Interfaces\MiddlewareInterface;
-use Mirage\Libs\Config;
-use Mirage\Libs\Helper;
-use Mirage\Libs\L;
-use Mirage\App\App;
-use Mirage\RestApp;
-use Phalcon\Events\Event;
+use Phalcon\Di\Injectable;
+use Phalcon\Events\EventsAwareInterface;
+use Phalcon\Events\ManagerInterface;
 
 /**
- * Class Auth Middleware
+ * Class Auth
  * @package Mirage
  */
-class AuthMiddleware implements MiddlewareInterface
+interface EventInterface
 {
-
-    /**
-     * This function must throw HttpException on any errors.
-     *
-     * @return void
-     * @throw HttpException
-     */
-    function check(): void
-    {
-        L::d("CHECKING AUTH MIDDLEWARE");
-        $headers = Helper::getHeaders();
-        $auth_header = $headers['m-auth'] ?? null;
-        L::d('M-AUTH: ' . $auth_header);
-        \Mirage\Libs\Auth::checkToken($auth_header, true);
-    }
 }

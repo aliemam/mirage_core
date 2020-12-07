@@ -25,9 +25,10 @@
 namespace Mirage\App;
 
 use ErrorException;
+use Mirage\Constants\Services;
 use Mirage\Libs\Helper;
-use Mirage\Libs\Middleware;
 use Mirage\Libs\Route;
+use Phalcon\Di;
 use phpDocumentor\Plugin\Scrybe\Converter\ToHtmlInterface;
 
 /**
@@ -37,6 +38,7 @@ use phpDocumentor\Plugin\Scrybe\Converter\ToHtmlInterface;
 class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
 {
     private array $routes = [];
+    private string $id;
 
     public function boot(): void
     {
@@ -44,14 +46,25 @@ class RoutesCollection extends \Phalcon\Mvc\Micro\Collection
             if (!$route instanceof Route) {
                 throw new ErrorException("[ERROR][100] invalid route object.");
             }
+            $this->id = Helper::getUniqueId($this->getPrefix());
+            $this->routes[$route->getId()] = $route;
+            $route->setCollectionId($this->id);
             $method = $route->getMethod();
             $path = $route->getPath();
             $action = $route->getAction();
-            $this->{$method}($path, $action);
+            $middlewares = $route->getMiddlewares();
+            $accesses = $route->getAccesses();
+            $this->{$method}($path, $action, $this->id.'-_-'.$route->getId());
+
+            foreach ($middlewares as $middleware) {
+                if(!$middleware instanceof Middleware) continue;
+                $event_manager = Di::getDefault()->getShared(Services::EVENTS_MANAGER);
+                $event_manager->attach(Services::MICRO, $middleware);
+            }
         }
     }
 
-    public function getUniqueId()
+    public function getId()
     {
         return Helper::getUniqueId($this->getPrefix());
     }

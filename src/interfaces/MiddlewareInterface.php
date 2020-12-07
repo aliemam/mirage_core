@@ -22,16 +22,18 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\App;
+namespace Mirage\Interfaces;
 
-use Phalcon\Di\Injectable;
-use Phalcon\Events\EventsAwareInterface;
-use Phalcon\Events\ManagerInterface;
+use Mirage\Exceptions\HttpException;
 
-/**
- * Class Auth
- * @package Mirage
- */
-class Event
+interface MiddlewareInterface
 {
+
+    /**
+     * This function must throw HttpException on any errors.
+     *
+     * @return void
+     * @throw HttpException
+     */
+    function check(): void;
 }

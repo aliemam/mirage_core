@@ -52,6 +52,12 @@ class Logger implements LoggerInterface
     private static array $default_logger_config = [];
 
     /**
+     * This value should be set anytime that a new request came
+     * @var string
+     */
+    private static ?string $tracker;
+
+    /**
      * @var string each logger has name that can be identified by that name
      */
     private string $logger_name;
@@ -63,7 +69,7 @@ class Logger implements LoggerInterface
      * @var array stores logger config which needed to connect to cache driver
      */
     private array $logger_config;
-    
+
     /**
      * Value will be prepended to message before logging. the full message would be "$prefix$message"
      * @var string
@@ -90,7 +96,7 @@ class Logger implements LoggerInterface
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             $this->logger->setLogLevel($logger_config['level'] ?? PhalconLogger::DEBUG);
 
-            $tracker = Config::get('app.request_tracker') ?? time();
+            $tracker = self::$tracker;
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
             $this->prefix = "[$tracker][$tag][$ip][$route]";
@@ -122,7 +128,7 @@ class Logger implements LoggerInterface
      */
     public static function setDefaultLogger(?string $logger_name = null): void
     {
-        if(!isset(self::$loggers[$logger_name])){
+        if (!isset(self::$loggers[$logger_name])) {
             throw new ErrorException("There is no logger name: $logger_name");
         }
         self::$default_logger_name = $logger_name ?? 'mirage';
@@ -179,6 +185,15 @@ class Logger implements LoggerInterface
     public function getLoggerConfig(): string
     {
         return $this->logger_config;
+    }
+
+    /**
+     * @param string $tracker
+     * @return void
+     */
+    public static function setLoggerTracker(string $tracker): void
+    {
+        self::$tracker = $tracker;
     }
 
     /**
@@ -306,6 +321,7 @@ class Logger implements LoggerInterface
         if (defined('CONFIG_DIR') && file_exists(CONFIG_DIR . '/logger.php')) {
             $loggers = require CONFIG_DIR . '/logger.php';
             $loggers = array_reverse($loggers);
+            self::$tracker = microtime();
             foreach ($loggers as $logger_name => $logger_config) {
                 self::$default_logger_name = $logger_name;
                 self::$default_logger_config = $logger_config;

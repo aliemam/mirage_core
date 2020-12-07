@@ -28,12 +28,14 @@ namespace Mirage;
 
 use ErrorException;
 use Exception;
+use Mirage\Constants\Services;
 
 /**
  * Undocumented class
  */
 class Core
 {
+    private static \Phalcon\Di $di;
     private static RestApp $rest_full_app;
     private static AsyncTask $async_task;
 
@@ -313,6 +315,7 @@ class Core
                 'Mirage\Exceptions' => MIRAGE_DIR . '/exceptions/',
                 'Mirage\Http' => MIRAGE_DIR . '/http/',
                 'Mirage\Libs' => MIRAGE_DIR . '/libs/',
+                'Mirage\Interfaces' => MIRAGE_DIR . '/interfaces/',
                 'Mirage\Middleware' => MIRAGE_DIR . '/middleware/'
             ],
             'Dirs' => [],
@@ -356,11 +359,14 @@ class Core
      */
     public static function getRestApp(): RestApp
     {
-        if (!isset(self::$rest_full_app)) {
-            self::$rest_full_app = new RestApp();
+        if (!isset(self::$di)) {
+            self::$di = new  \Phalcon\Di\FactoryDefault();
+            \Phalcon\Di::setDefault(self::$di);
+            \Phalcon\Di::getDefault()->setShared(Services::MICRO, function(){
+                return new RestApp(\Phalcon\Di::getDefault());
+            });
         }
-
-        return self::$rest_full_app;
+        return \Phalcon\Di::getDefault()->getShared(Services::MICRO);
     }
 
     public static function getAsyncTask(): AsyncTask

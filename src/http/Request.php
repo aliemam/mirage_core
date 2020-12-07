@@ -26,8 +26,11 @@ namespace Mirage\Http;
 
 use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
+use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
+use Mirage\Libs\Route;
+use Phalcon\Di;
 use Phalcon\Mvc\Router\RouteInterface;
 
 /**
@@ -39,38 +42,13 @@ use Phalcon\Mvc\Router\RouteInterface;
 
 final class Request extends \Phalcon\Http\Request
 {
-//    /**
-//     * Get Matched Route Object
-//     *
-//     * @param \Phalcon\Mvc\Router\RouteInterface $router
-//     * @return void
-//     */
-//    public static function getRoute(\Phalcon\Mvc\Router\RouteInterface $router)
-//    {
-//        $route_path = $router->getMatchedRoute()->getPattern();
-//        return RoutesCollection::getCollections()[$route_path] ?? null;
-//    }
-//
-//    /**
-//     * Get Middlewares of Matched Route Object
-//     *
-//     * @param \Phalcon\Mvc\Router\RouteInterface $router
-//     * @return void
-//     */
-//    public static function getMiddlewares(\Phalcon\Mvc\Router\RouteInterface $router)
-//    {
-//        $route_path = $router->getMatchedRoute()->getPattern();
-//        $route = RoutesCollection::getCollections()[$route_path] ?? null;
-//        return $route->getMiddlewares() ?? [];
-//    }
-
     /**
      * Get All data in request. Post data, Payload data, Query String data, ...
      *
      * @param array $params
      * @return array
      */
-    public static function getData(array $params = [])
+    public static function getData(array $params = []): array
     {
         $data1 = (array) ((new self)->getJsonRawBody() ?? []);
         $data2 = (array) ((new self)->get() ?? []);
@@ -101,5 +79,22 @@ final class Request extends \Phalcon\Http\Request
         }
 
         return $returned_params;
+    }
+
+    /**
+     * Getting Information of request
+     *
+     * @return Route
+     */
+    public static function getRoute(): Route
+    {
+        $app = \Phalcon\Di::getDefault()->getShared(Services::MICRO);
+        $collection = $app->getCollections();
+        $route = $app->getRouter()->getMatchedRoute();
+        $route_ids = explode('-_-', $route->getName());
+        $collection_id = $route_ids[0];
+        $route_id = $route_ids[1];
+
+        return $collection[$collection_id]->getRoutes()[$route_id];
     }
 }

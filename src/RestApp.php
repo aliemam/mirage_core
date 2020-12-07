@@ -30,10 +30,15 @@ use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;
+use Mirage\Http\Request;
+use Mirage\Http\Response;
 use Mirage\Libs\C;
 use Mirage\Libs\Cache;
 use Mirage\Libs\Config;
+use Mirage\Libs\Helper;
 use Mirage\Libs\L;
+use Mirage\Libs\Route;
+use Phalcon\Di;
 
 /**
  * RestApp class
@@ -44,13 +49,13 @@ class RestApp extends \Phalcon\Mvc\Micro
     private array $collections = [];
     private array $events = [];
 
-    public function __construct()
+    public function __construct(\Phalcon\Di $di)
     {
         parent::__construct();
 
         // create container
-        L::i("Setting DI");
-        $this->setDi(new \Phalcon\Di\FactoryDefault());
+        $this->setDi($di);
+        \Phalcon\Di::setDefault($di);
     }
 
     /**
@@ -82,6 +87,8 @@ class RestApp extends \Phalcon\Mvc\Micro
             return $manager;
         });
 
+        $event_manager = Di::getDefault()->getShared(Services::EVENTS_MANAGER);
+        $this->setEventsManager($event_manager);
     }
 
     /**
@@ -170,7 +177,7 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function addCollection(RoutesCollection $collection): RestApp
     {
-        $this->collections[$collection->getUniqueId()] = $collection;
+        $this->collections[$collection->getId()] = $collection;
         $collection->boot();
         $this->mount($collection);
         return $this;
@@ -210,10 +217,11 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function run(): void
     {
-        Config::set('app.request_tracker', time());
-        L::d('[Request STARTS] ' . $_SERVER['REQUEST_URI']);
-        L::d('[Request HEADERS] ' . json_encode(\Mirage\Libs\Helper::getHeaders()));
-
+        L::i('[Request START] ' . json_encode($this->request->getQuery()));
+        L::i('[Request HEADERS] ' . json_encode(Helper::getHeaders()));
+        L::i('[Request BODY] ' . json_encode($this->request->getRawBody(true)));
+        L::i('[Request POST] ' . json_encode($this->request->getPost()));
+        
         if ($this->request->isOptions()) {
             $this->response->createOptionResponseHeaders();
             $this->response->setStatusCode(200, 'OK');
@@ -223,12 +231,18 @@ class RestApp extends \Phalcon\Mvc\Micro
         };
 
         $this->before(function () {
-            return;
+            if (Config::get('app.env') === 'dev') {
+                L::d('BYPASS MIDDLEWARE (IN DEV MODE)');
+                return;
+            }
+            $route = Request::getRoute();
+            foreach ($route->getMiddlewares() as $middleware){
+                $middleware->check();
+            }
         });
 
         $this->after(function () {
             $result = $this->getReturnedValue();
-            L::i("Result: " . json_encode($result));
             $result->sendResponse();
         });
 
