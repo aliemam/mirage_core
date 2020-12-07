@@ -3,11 +3,12 @@
 base_dir=$(dirname "$0")
 cd "$base_dir"/../../../ || exit 1
 APPDIR=$(pwd)
+COMMAND=$1
+APPNAME=$2
 
-case $1 in
+case $COMMAND in
 appname)
-  APPNAME=$2 || echo -e "give me your project name"
-  cd ..
+  [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
   mv mirage_microservice "$APPNAME"
   # shellcheck disable=SC2164
   cd "$APPNAME"
@@ -18,5 +19,5 @@ removegit)
   rm -rf .git
   ;;
 *)
-  echo -e "mirage [changename project_name|removegit]"
+  echo -e "mirage [appname project_name|removegit]"
 esac
