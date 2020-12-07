@@ -35,6 +35,7 @@ use Mirage\Libs\Helper;
 use Mirage\Libs\L;
 use Mirage\Libs\Route;
 use Phalcon\Di;
+use phpDocumentor\Reflection\Types\This;
 
 /**
  * RestApp class

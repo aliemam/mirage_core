@@ -34,7 +34,6 @@ class Model extends PhalconModel implements \JsonSerializable
     public int $created_at;
     public int $updated_at;
     private bool $force_terminated = false;
-    private bool $call_after_fetch = false;
 
     /**
      * This method calls just one and initiate model.
@@ -72,28 +71,41 @@ class Model extends PhalconModel implements \JsonSerializable
     }
 
     /**
-     * Always calls afterFetch model event on saving
+     * This will calls before saving the model. $model->save();
+     *
+     * @return void
+     */
+    public function beforeSave(): void
+    {
+    }
+
+    /**
+     * This will calls after a model object is fetched from db.
+     *
+     * @return void
+     */
+    public function afterFetch(): void
+    {
+    }
+
+    /**
+     * Always calls after model was saved in db.
      *
      * @return void
      */
     public function afterSave(): void
     {
-        if ($this->call_after_fetch) {
-            $this->afterFetch();
-        }
     }
 
     /**
      * This function handle all of saving job.
      *
      * @param boolean $force_terminate_on_error
-     * @param boolean $calling_after_fetch
      * @return bool
      */
-    public function saveModel($force_terminate_on_error = true, $calling_after_fetch = false): bool
+    public function saveModel($force_terminate_on_error = true): bool
     {
         $this->force_terminated = $force_terminate_on_error;
-        $this->call_after_fetch = $calling_after_fetch;
         $this->getReadConnection()->query("SET NAMES UTF8");
         return $this->save();
     }
@@ -121,11 +133,11 @@ class Model extends PhalconModel implements \JsonSerializable
     /**
      * This function helps to use IN keyword.
      *
-     * @param $column_name
-     * @param $values
+     * @param string $column_name
+     * @param array $values
      * @return array
      */
-    public static function findIn($column_name, $values): array
+    public static function findIn(sstring $column_name, array $values): array
     {
         if (!isset($values) || !isset($column_name)) {
             return [];
