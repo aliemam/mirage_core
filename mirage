@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 base_dir=$(dirname "$0")
-cd "$base_dir"/../../ || exit 1
+cd "$base_dir"/../../../ || exit 1
 APPDIR=$(pwd)
 
 while [ $# != 0 ]; do
