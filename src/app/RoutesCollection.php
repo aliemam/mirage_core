@@ -29,7 +29,6 @@ use Mirage\Constants\Services;
 use Mirage\Libs\Helper;
 use Mirage\Libs\Route;
 use Phalcon\Di;
-use phpDocumentor\Plugin\Scrybe\Converter\ToHtmlInterface;
 
 /**
  * Class RoutesCollection

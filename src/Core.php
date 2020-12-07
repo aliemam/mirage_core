@@ -41,7 +41,6 @@ class Core
 
     private function __construct()
     {
-        return true;
     }
 
     /**
@@ -108,7 +107,7 @@ class Core
     public static function shutdownHandler(): void
     {
         $error = error_get_last();
-        if(isset($error)) {
+        if (isset($error)) {
             Core::errorHandler(
                 (int)$error['type'],
                 (string)$error['message'],
@@ -307,7 +306,7 @@ class Core
         $framework_auto_loader = [
             'Namespaces' => [
                 // mirage namespaces
-                'Mirage'  => MIRAGE_DIR,
+                'Mirage' => MIRAGE_DIR,
                 'Mirage\App' => MIRAGE_DIR . '/app/',
                 'Mirage\Console' => MIRAGE_DIR . '/console/',
                 'Mirage\Constants' => MIRAGE_DIR . '/constants/',

@@ -24,7 +24,6 @@
 
 namespace Mirage\Http;
 
-use Mirage\App\RoutesCollection;
 use Mirage\Constants\Err;
 use Mirage\Constants\Services;
 use Mirage\Exceptions\HttpException;

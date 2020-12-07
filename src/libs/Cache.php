@@ -29,6 +29,7 @@ use Phalcon\Cache\CacheFactory;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Storage\SerializerFactory;
 use Phalcon\Cache as PhalconCache;
+use Phalcon\Cache\Exception\InvalidArgumentException;
 
 /**
  * Class Cache
@@ -128,7 +129,7 @@ class Cache
      */
     public static function setDefaultCache(string $cache_name = null): void
     {
-        if(!isset(self::$caches[$cache_name])){
+        if (!isset(self::$caches[$cache_name])) {
             throw new ErrorException("There is no cache name: $cache_name");
         }
         self::$default_cache_name = $cache_name ?? 'mirage';
@@ -177,7 +178,7 @@ class Cache
      * @param mixed $value This is value of data we want to save in memory and will be encoded as json before saving.
      * @param int $expiration in seconds
      * @return void
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public function add(string $key, $value, int $expiration = 31536000): void
     {
@@ -200,7 +201,7 @@ class Cache
     /**
      * @param string $key The key of data stored in memory
      * @return null|mixed
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public function get(string $key)
     {
@@ -249,7 +250,7 @@ class Cache
     /**
      * @param string $key The key of data stored in memory
      * @return bool
-     * @throws ErrorException
+     * @throws ErrorException|InvalidArgumentException
      */
     public function delete(string $key): bool
     {

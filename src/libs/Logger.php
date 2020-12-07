@@ -182,7 +182,7 @@ class Logger implements LoggerInterface
     /**
      * @return array
      */
-    public function getLoggerConfig(): string
+    public function getLoggerConfig(): array
     {
         return $this->logger_config;
     }

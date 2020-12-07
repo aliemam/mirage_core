@@ -27,7 +27,8 @@
     "psr/log": "^1.0",
     "firebase/php-jwt": "^3.0",
     "vlucas/phpdotenv": "^4.1",
-    "ext-json": "*"
+    "ext-json": "*",
+    "phan/phan": "^3.2"
   },
   "scripts": {
     "test": "phpunit",
