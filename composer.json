@@ -40,5 +40,5 @@
       "Mirage\\": "src/"
     }
   },
-  "bin": ["mirage"]
+  "bin": ["src/mirage"]
 }
