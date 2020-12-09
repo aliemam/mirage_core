@@ -3,20 +3,21 @@
 base_dir=$(dirname "$0")
 cd "$base_dir"/../../../ || exit 1
 APPDIR=$(pwd)
+COMMAND=$1
+APPNAME=$2
 
-while [ $# != 0 ]; do
-    case $1 in
-    appname)
-      APPNAME=$2 || echo -e "give me your project name"
-      cd ..
-      mv mirage_microservice "$APPNAME"
-      # shellcheck disable=SC2164
-      cd "$APPNAME"
-      APPDIR=$(pwd)
-      # TO DO
-      ;;
-    removegit)
-      rm -rf .git
-      ;;
-    esac
-done
+case $COMMAND in
+appname)
+  [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
+  mv mirage_microservice "$APPNAME"
+  # shellcheck disable=SC2164
+  cd "$APPNAME"
+  APPDIR=$(pwd)
+  # TO DO
+  ;;
+removegit)
+  rm -rf .git
+  ;;
+*)
+  echo -e "mirage [appname project_name|removegit]"
+esac
