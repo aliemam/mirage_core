@@ -87,10 +87,13 @@ class Logger implements LoggerInterface
         $this->logger_config = $logger_config;
         try {
             $path = $logger_config['path'] ?? LOG_DIR;
+            
             $tag = $logger_config['tag'] ?? 'NT';
             $path .= '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
-//            fopen($path, 'a+');
-//            chmod($path, 0777);
+            
+            $fp = fopen($path, 'a+');
+            fclose($fp);
+            chmod($path, 0777);
 
             $adapter = new Stream($path);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);

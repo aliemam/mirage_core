@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
 base_dir=$(dirname "$0")
-cd "$base_dir"/../../../ || exit 1
+cd "$base_dir"/../../ || exit 1
 APPDIR=$(pwd)
 COMMAND=$1
 APPNAME=$2
 
 case $COMMAND in
+init)
+  chmod 777 log
 appname)
   [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
+  cd ..
   mv mirage_microservice "$APPNAME"
   # shellcheck disable=SC2164
   cd "$APPNAME"
