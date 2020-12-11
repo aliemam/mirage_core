@@ -93,7 +93,7 @@ class Logger implements LoggerInterface
             
             $fp = fopen($path, 'a+');
             fclose($fp);
-            chmod($path, 0777);
+            @chmod($path, 0777);
 
             $adapter = new Stream($path);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
