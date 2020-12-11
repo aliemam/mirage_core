@@ -150,6 +150,6 @@ class Model extends PhalconModel implements \JsonSerializable
         return $object::find([
             "conditions" => "$column_name IN (" . implode(',', array_reverse($arr)) . ")",
             "bind" => $values
-        ]);
+        ])->toArray();
     }
 }
