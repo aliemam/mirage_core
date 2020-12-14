@@ -25,6 +25,7 @@
 namespace Mirage\Libs;
 
 use ErrorException;
+use Exception;
 use Phalcon\Logger as PhalconLogger;
 use Psr\Log\LoggerInterface;
 use Phalcon\Logger\Adapter\Stream;
@@ -53,7 +54,7 @@ class Logger implements LoggerInterface
 
     /**
      * This value should be set anytime that a new request came
-     * @var string
+     * @var string|null
      */
     private static ?string $tracker;
 
@@ -79,6 +80,7 @@ class Logger implements LoggerInterface
     /**
      * Logger constructor.
      * @param string $logger_name
+     * @param array $logger_config
      * @throws ErrorException
      */
     private function __construct(string $logger_name, array $logger_config)
@@ -103,7 +105,7 @@ class Logger implements LoggerInterface
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
             $this->prefix = "[$tracker][$tag][$ip][$route]";
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ErrorException('Cant create Logger: ' . $logger_name . ' :' . $e->getMessage());
         }
     }
@@ -128,6 +130,7 @@ class Logger implements LoggerInterface
     /**
      * Set default logger. After this each time L class called it would use this logger.
      * @param string|null $logger_name
+     * @throws ErrorException
      */
     public static function setDefaultLogger(?string $logger_name = null): void
     {
@@ -141,7 +144,6 @@ class Logger implements LoggerInterface
      * This function just reduce length of message
      * @param $msg
      * @return string
-     * @throws ErrorException
      */
     private function shortMsg($msg): string
     {
@@ -200,9 +202,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function emergency($msg, array $arr = []): void
     {
@@ -210,9 +211,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function alert($msg, array $arr = []): void
     {
@@ -220,9 +220,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function critical($msg, array $arr = []): void
     {
@@ -230,9 +229,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function error($msg, array $arr = []): void
     {
@@ -240,9 +238,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function warning($msg, array $arr = []): void
     {
@@ -250,9 +247,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function notice($msg, array $arr = []): void
     {
@@ -260,9 +256,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function info($msg, array $arr = []): void
     {
@@ -270,9 +265,8 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function debug($msg, array $arr = []): void
     {
@@ -281,9 +275,8 @@ class Logger implements LoggerInterface
 
     /**
      * @param mixed $level
-     * @param string $msg
+     * @param mixed $msg
      * @param array $arr
-     * @throws ErrorException
      */
     public function log($level, $msg, array $arr = []): void
     {

@@ -28,7 +28,10 @@
     "firebase/php-jwt": "^3.0",
     "vlucas/phpdotenv": "^4.1",
     "ext-json": "*",
-    "phan/phan": "^3.2"
+    "phan/phan": "^3.2",
+    "enqueue/redis": "^0.10.4",
+    "ext-redis": "*",
+    "enqueue/amqp-ext": "^0.10.4"
   },
   "scripts": {
     "test": "phpunit",

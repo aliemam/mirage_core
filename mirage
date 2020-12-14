@@ -7,20 +7,21 @@ COMMAND=$1
 APPNAME=$2
 
 case $COMMAND in
-init)
-  chmod 777 log
-appname)
-  [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
-  cd ..
-  mv mirage_microservice "$APPNAME"
-  # shellcheck disable=SC2164
-  cd "$APPNAME"
-  APPDIR=$(pwd)
-  # TO DO
-  ;;
-removegit)
-  rm -rf .git
-  ;;
-*)
-  echo -e "mirage [appname project_name|removegit]"
+  init)
+    chmod 777 log
+    ;;
+  appname)
+    [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
+    cd ..
+    mv mirage_microservice "$APPNAME"
+    # shellcheck disable=SC2164
+    cd "$APPNAME"
+    APPDIR=$(pwd)
+    # TO DO
+    ;;
+  removegit)
+    rm -rf .git
+    ;;
+  *)
+    echo -e "mirage [appname project_name|removegit]"
 esac
