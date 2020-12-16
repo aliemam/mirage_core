@@ -22,7 +22,7 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\App;
+namespace Mirage\Interfaces;
 
 /**
  * Class Auth

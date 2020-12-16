@@ -23,7 +23,7 @@
  */
 
 
-namespace Mirage\Constants;
+namespace App\Constants;
 
 /**
  * Class ErrorCodes

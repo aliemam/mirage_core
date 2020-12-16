@@ -1,9 +1,46 @@
-#!/bin/env/php
+#!/usr/bin/env bash
 
-<?php
+base_dir=$(dirname "$0")
+cd "$base_dir"/../../ || exit 1
+APPDIR=$(pwd)
+FRAMEWORKDIR="$APPDIR"/vendor/aliemam/mirage_core/src
+COMMAND=$1
+APPNAME=$2
 
-if (PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg') {
-    echo 'Warning: Mirage should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
-}
-
-
+case $COMMAND in
+  init)
+    chmod 777 "$APPDIR/log"
+    if [ ! -f "$APPDIR/app/constants/Err.php" ]; then
+      \cp -f "$FRAMEWORKDIR/constants/Err.php" "$APPDIR/app/constants/"
+    fi
+    if [ ! -f "$APPDIR/app/constants/Msg.php" ]; then
+      \cp -f "$FRAMEWORKDIR/constants/Msg.php" "$APPDIR/app/constants/"
+    fi
+    if [ ! -f "$APPDIR/app/constants/Ok.php" ]; then
+      \cp -f "$FRAMEWORKDIR/constants/Ok.php" "$APPDIR/app/constants/"
+    fi
+    if [ ! -f "$APPDIR/app/constants/ReqMethod.php" ]; then
+      \cp -f "$FRAMEWORKDIR/constants/ReqMethod.php" "$APPDIR/app/constants/"
+    fi
+    if [ ! -f "$APPDIR/app/constants/Services.php" ]; then
+      \cp -f "$FRAMEWORKDIR/constants/Services.php" "$APPDIR/app/constants/"
+    fi
+    if [ ! -f "$APPDIR/app/lang/en.php" ]; then
+      \cp -f "$FRAMEWORKDIR/lang/en.php" "$APPDIR/app/lang/"
+    fi
+    ;;
+  appname)
+    [ -z "$APPNAME" ] && { echo "Error: give me a name"; exit 1; }
+    cd ..
+    mv mirage_microservice "$APPNAME"
+    # shellcheck disable=SC2164
+    cd "$APPNAME"
+    APPDIR=$(pwd)
+    # TO DO
+    ;;
+  removegit)
+    rm -rf .git
+    ;;
+  *)
+    echo -e "mirage [appname project_name|removegit]"
+esac

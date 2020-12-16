@@ -25,7 +25,7 @@
 namespace Mirage\App;
 
 use ErrorException;
-use Mirage\Constants\Services;
+use App\Constants\Services;
 use Mirage\Libs\Helper;
 use Mirage\Libs\Route;
 use Phalcon\Di;

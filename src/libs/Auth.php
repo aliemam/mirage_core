@@ -25,7 +25,7 @@
 namespace Mirage\Libs;
 
 use ErrorException;
-use Mirage\Constants\Err;
+use App\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Phalcon\Security;
 use Firebase\JWT\JWT;

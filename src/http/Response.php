@@ -24,7 +24,7 @@
 
 namespace Mirage\Http;
 
-use Mirage\Constants\Ok;
+use App\Constants\Ok;
 use Mirage\Libs\Config;
 use Mirage\Libs\L;
 use Mirage\Libs\Translator;

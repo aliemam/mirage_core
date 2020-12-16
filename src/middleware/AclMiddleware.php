@@ -24,7 +24,7 @@
 //
 //namespace Mirage\Middleware;
 //
-//use Mirage\Constants\Err;
+//use App\Constants\Err;
 //use Mirage\Exceptions\HttpException;
 //use Mirage\Libs\Auth;
 //use Mirage\Libs\L;

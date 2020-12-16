@@ -17,7 +17,7 @@
 namespace Mirage\Libs;
 
 use ErrorException;
-use Mirage\Constants\Err;
+use App\Constants\Err;
 use Mirage\Exceptions\HttpException;
 use Phalcon\Cache\Exception\InvalidArgumentException;
 

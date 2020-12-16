@@ -2,7 +2,7 @@
 
 namespace Mirage\Events;
 
-use Mirage\Constants\Services;
+use App\Constants\Services;
 use Mirage\Libs\L;
 use Phalcon\Events\Event;
 

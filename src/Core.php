@@ -28,7 +28,7 @@ namespace Mirage;
 
 use ErrorException;
 use Exception;
-use Mirage\Constants\Services;
+use App\Constants\Services;
 
 /**
  * Undocumented class
@@ -309,7 +309,6 @@ class Core
                 'Mirage' => MIRAGE_DIR,
                 'Mirage\App' => MIRAGE_DIR . '/app/',
                 'Mirage\Console' => MIRAGE_DIR . '/console/',
-                'Mirage\Constants' => MIRAGE_DIR . '/constants/',
                 'Mirage\Events' => MIRAGE_DIR . '/events/',
                 'Mirage\Exceptions' => MIRAGE_DIR . '/exceptions/',
                 'Mirage\Http' => MIRAGE_DIR . '/http/',
@@ -361,7 +360,7 @@ class Core
         if (!isset(self::$di)) {
             self::$di = new  \Phalcon\Di\FactoryDefault();
             \Phalcon\Di::setDefault(self::$di);
-            \Phalcon\Di::getDefault()->setShared(Services::MICRO, function(){
+            \Phalcon\Di::getDefault()->setShared(Services::MICRO, function () {
                 return new RestApp(\Phalcon\Di::getDefault());
             });
         }

@@ -22,7 +22,7 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\Constants;
+namespace App\Constants;
 
 class Services
 {
