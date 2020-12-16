@@ -43,7 +43,7 @@ use stdClass;
  */
 class Auth
 {
-    /** @var stdClass jwt token stores in this variable */
+    /** @var stdClass|null jwt token stores in this variable */
     private static ?stdClass $jwt_payload;
 
     /**
@@ -69,13 +69,13 @@ class Auth
 
     /**
      * @param array $payload This is payload body of jwt token.
+     * @param string $hash_key
      * @return string|null
-     * @throws HttpException
      * @throws ErrorException
+     * @throws HttpException
      */
-    public static function generateToken(array $payload): ?string
+    public static function generateToken(array $payload, string $hash_key): ?string
     {
-        $hash_key = Config::get('app.security.jwt_hash_key');
         if (!isset($hash_key)) {
             self::error(
                 new HttpException(
@@ -91,21 +91,22 @@ class Auth
     }
 
     /**
-     * @param ?string $jwt_token This is given jwt token to check
+     * @param string $jwt_token This is given jwt token to check
+     * @param string $hash_key
      * @param bool $throw_exception_on_error if this variable was set to false,
      * on any authentication failure, this class does not throw an error so be careful with it.
      * @return bool
-     * @throws HttpException
      * @throws ErrorException
+     * @throws HttpException
      */
-    public static function checkToken(?string $jwt_token, bool $throw_exception_on_error = true): bool
+    public static function checkToken(string $jwt_token, string $hash_key, bool $throw_exception_on_error = true): bool
     {
         L::d("checking token: $jwt_token");
         if (!$throw_exception_on_error) {
             L::w('!!!CHECK AUTH TOKEN WARNING ---> BYPASSED ON ERROR!!!');
         }
 
-        if (!isset($jwt_token) || $jwt_token == '') {
+        if ($jwt_token == '') {
             self::error(
                 new HttpException(Err::AUTH_HEADER_NOT_FOUND, 'AUTHORIZATION Header not found'),
                 $throw_exception_on_error
@@ -113,7 +114,6 @@ class Auth
             return false;
         }
         
-        $hash_key = Config::get('app.security.jwt_hash_key');
         if (!isset($hash_key)) {
             self::error(
                 new HttpException(
