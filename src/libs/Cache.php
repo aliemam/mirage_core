@@ -30,12 +30,14 @@ use Phalcon\Cache\AdapterFactory;
 use Phalcon\Storage\SerializerFactory;
 use Phalcon\Cache as PhalconCache;
 use Phalcon\Cache\Exception\InvalidArgumentException;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Class Cache
  * @package Mirage\Libs
  */
-class Cache
+class Cache implements CacheItemPoolInterface
 {
     /** @var array of Cache Objects that store here as Singleton Object */
     private static array $caches = [];
@@ -95,7 +97,7 @@ class Cache
                 [
                     'defaultSerializer' => $cache_config['defaultSerializer'],
                     'lifetime' => $cache_config['lifetime'] ?? 31536000
-                    
+
                 ]
             );
             $cache_factory = new CacheFactory($adapter_factory);
@@ -126,6 +128,7 @@ class Cache
     /**
      * Set default cache. After this each time C class called, it will use this cache.
      * @param string|null $cache_name
+     * @throws ErrorException
      */
     public static function setDefaultCache(string $cache_name = null): void
     {
@@ -177,14 +180,14 @@ class Cache
      * @param string $key This is key of data we want to save in memory
      * @param mixed $value This is value of data we want to save in memory and will be encoded as json before saving.
      * @param int $expiration in seconds
-     * @return void
+     * @return bool
      * @throws ErrorException|InvalidArgumentException
      */
-    public function add(string $key, $value, int $expiration = 31536000): void
+    public function add(string $key, $value, int $expiration = 31536000): bool
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not add!!!");
-            return;
+            return false;
         }
         $now = time();
         L::d("Adding to cache...");
@@ -195,7 +198,8 @@ class Cache
         $data = new \stdClass();
         $data->data = $value;
         $data->time = $now;
-        $this->cache->set($key, $data, $expiration);
+        $data->ttl = $expiration;
+        return $this->cache->set($key, $data, $expiration);
     }
 
     /**
@@ -242,7 +246,7 @@ class Cache
         foreach ($data as $d) {
             $results[] = $d->data;
         }
-        L::d("cache: $pattern found ".count($results). " results");
+        L::d("cache: $pattern found " . count($results) . " results");
 
         return $results;
     }
@@ -310,5 +314,57 @@ class Cache
                 self::getInstance($cache_name, $cache_config);
             }
         }
+    }
+
+    // IMPLEMENTING THE INTERFACE
+
+    public function getItem($key)
+    {
+        return $this->get($key);
+    }
+
+    public function getItems(array $keys = array())
+    {
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = $this->getItem($key);
+        }
+
+        return $result;
+    }
+
+    public function hasItem($key)
+    {
+        return $this->cache->has($key);
+    }
+
+    public function clear()
+    {
+        return $this->cache->clear();
+    }
+
+    public function deleteItem($key)
+    {
+        return $this->delete($key);
+    }
+
+    public function deleteItems(array $keys)
+    {
+        return $this->cache->deleteMultiple($keys);
+    }
+
+    public function save(CacheItemInterface $item)
+    {
+        return $this->add($item->getKey(), $item);
+    }
+
+    public function saveDeferred(CacheItemInterface $item)
+    {
+        return false;
+    }
+
+    public function commit()
+    {
+        return false;
     }
 }
