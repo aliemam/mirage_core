@@ -25,8 +25,8 @@ case $COMMAND in
     if [ ! -f "$APPDIR/app/constants/Services.php" ]; then
       \cp -f "$FRAMEWORKDIR/constants/Services.php" "$APPDIR/app/constants/"
     fi
-    if [ ! -f "$APPDIR/app/lang/en.php" ]; then
-      \cp -f "$FRAMEWORKDIR/lang/en.php" "$APPDIR/app/lang/"
+    if [ ! -f "$APPDIR/lang/en.php" ]; then
+      \cp -f "$FRAMEWORKDIR/lang/en.php" "$APPDIR/lang/"
     fi
     ;;
   appname)
