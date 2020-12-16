@@ -318,4 +318,20 @@ class Helper
         }
         return $default_value;
     }
+
+    /**
+     * Converts given object to stdClass. remember this just returns public variables of the object.
+     *
+     * @param $object
+     * @return \stdClass
+     */
+    public function castToStd($object){
+        $variables = get_object_vars($object);
+        $std = new \stdClass();
+        foreach ($variables as $variable => $value) {
+            $std->$variable = $value;
+        }
+
+        return $std;
+    }
 }

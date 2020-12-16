@@ -25,6 +25,7 @@
 namespace Mirage\App;
 
 use App\Constants\Err;
+use ErrorException;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Phalcon\Mvc\Model as PhalconModel;
@@ -114,7 +115,7 @@ class Model extends PhalconModel implements \JsonSerializable
      * If by any reason model not saved, this function is triggered.
      *
      * @throws HttpException
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public function notSaved(): void
     {
@@ -137,7 +138,7 @@ class Model extends PhalconModel implements \JsonSerializable
      * @param array $values
      * @return array
      */
-    public static function findIn(sstring $column_name, array $values): array
+    public static function findIn(string $column_name, array $values): array
     {
         if (!isset($values) || !isset($column_name)) {
             return [];
@@ -151,5 +152,15 @@ class Model extends PhalconModel implements \JsonSerializable
             "conditions" => "$column_name IN (" . implode(',', array_reverse($arr)) . ")",
             "bind" => $values
         ])->toArray();
+    }
+
+    public function castToStd(){
+        $variables = get_object_vars($this);
+        $std = new \stdClass();
+        foreach ($variables as $variable => $value) {
+            $std->$variable = $value;
+        }
+
+        return $std;
     }
 }
