@@ -35,6 +35,8 @@ use App\Constants\Services;
  */
 class Core
 {
+    public const UNI_CHANNEL = 'universal_channel';
+
     private static \Phalcon\Di $di;
     private static RestApp $rest_full_app;
     private static AsyncTask $async_task;
@@ -337,6 +339,16 @@ class Core
     }
 
     /**
+     * Register Universal channel for all threads
+     */
+    private static function registerUniversalChannel(): void
+    {
+        if(extension_loaded('parallel')) {
+            self::$channel = \parallel\Channel::make(self::UNI_CHANNEL, \parallel\Channel::Infinite);
+        }
+    }
+
+    /**
      * Mirage booting function
      * Brings up all needed components and register all needed namespaces.
      *
@@ -345,9 +357,13 @@ class Core
      */
     public static function boot(): void
     {
+        if(!extension_loaded('phalcon')) {
+            throw new ErrorException('[ERROR][100] Phalcon can not be found!!!');
+        }
         self::bootMirageFrameworkErrorHandlers();
         self::defineMirageAppEnvironmentVariables();
         self::registerMirageNamespace();
+        self::registerUniversalChannel();
     }
 
     /**

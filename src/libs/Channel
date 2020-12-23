@@ -22,13 +22,55 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\Interfaces;
+namespace Mirage\Libs;
 
-/**
- * Class Auth
- * @package Mirage
- */
-interface BeanstalkInterface
+use ErrorException;
+use Mirage\Core;
+
+final class Channel
 {
-    public function run();
+    /**
+     * Better reference for UNI_CHANNEL constance
+     */
+    const UNI_CHANNEL = Core::UNI_CHANNEL;
+
+    /**
+     * @var Channel singleton object
+     */
+    private static Channel $instance;
+
+    /**
+     * @var \parallel\Channel holds the object of universal channel
+     */
+    private static \parallel\Channel $channel;
+
+    /**
+     * Channel constructor.
+     * @throws ErrorException
+     */
+    private function __construct()
+    {
+        try {
+            self::$channel = \parallel\Channel::opne(self::UNI_CHANNEL);
+        } catch (\Exception $e) {
+            throw new ErrorException('Cant open universal channel :' . $e->getMessage());
+        }
+    }
+
+    /**
+     * returns the singleton instance
+     * @return static
+     */
+    private static function getInstance(): self
+    {
+        if(!isset(self::$instance)) {
+            self::$instance = new Channel();
+        }
+        return self::$instance;
+    }
+
+    public static function send(array $data): void
+    {
+
+    }
 }
