@@ -364,7 +364,7 @@ class Core
         self::bootMirageFrameworkErrorHandlers();
         self::defineMirageAppEnvironmentVariables();
         self::registerMirageNamespace();
-        self::registerUniversalChannel();
+//        self::registerUniversalChannel();
     }
 
     /**
