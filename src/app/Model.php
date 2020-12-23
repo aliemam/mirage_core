@@ -43,7 +43,6 @@ class Model extends PhalconModel implements \JsonSerializable
      */
     public function initialize(): void
     {
-        parent::initialize();
         static::setup(
             [
                 'disableAssignSetters' => true
