@@ -64,7 +64,7 @@ final class Request extends \Phalcon\Http\Request
                 $name = substr($param, 1);
             }
 
-            L::d("checking $name, value: " . $data->$name);
+            L::d("checking $name, value: " . $data->$name ?? null);
             if ((!isset($data->$name) || $data->$name == '') && $req) {
                 throw new HttpException(Err::REQUEST_MISS_PARAM, "param $name should be specified");
             }
