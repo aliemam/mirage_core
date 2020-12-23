@@ -37,6 +37,22 @@ class Model extends PhalconModel implements \JsonSerializable
     private bool $force_terminated = false;
 
     /**
+     * This method calls just one and initiate model.
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+        static::setup(
+            [
+                'disableAssignSetters' => true
+            ]
+        );
+        $this->useDynamicUpdate(true);
+    }
+
+    /**
      * Before validating model on creating, this function sets created_at and update_at columns.
      *
      * @return void
