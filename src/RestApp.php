@@ -29,6 +29,7 @@ use Mirage\App\RoutesCollection;
 use App\Constants\Err;
 use App\Constants\Services;
 use Mirage\Exceptions\HttpException;
+use Mirage\Http\Request;
 use Mirage\Libs\Config;
 use Mirage\Libs\Helper;
 use Mirage\Libs\L;
@@ -58,7 +59,6 @@ class RestApp extends \Phalcon\Mvc\Micro
      * This function boots all frameworks default services and routes and events
      *
      * @return void
-     * @throws ErrorException
      */
     public function bootFrameworkDefaults(): void
     {
@@ -91,6 +91,7 @@ class RestApp extends \Phalcon\Mvc\Micro
      * This function boots all frameworks default services and routes and events
      *
      * @return void
+     * @throws ErrorException
      */
     public function bootAppDefaults(): void
     {
@@ -165,7 +166,7 @@ class RestApp extends \Phalcon\Mvc\Micro
         return $this->services;
     }
 
-    public static function getSrv(string $service_name): mixed
+    public static function getSrv(string $service_name)
     {
         return \Phalcon\Di::getDefault()->getShared($service_name);
     }
@@ -175,6 +176,7 @@ class RestApp extends \Phalcon\Mvc\Micro
      *
      * @param RoutesCollection $collection
      * @return RestApp
+     * @throws ErrorException
      */
     public function addCollection(RoutesCollection $collection): RestApp
     {
