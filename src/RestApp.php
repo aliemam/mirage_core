@@ -110,7 +110,7 @@ class RestApp extends \Phalcon\Mvc\Micro
                         continue;
                     }
                     $route = str_replace('.php', '', $route);
-                    $route_class = "\\App\\Route\\$route";
+                    $route_class = "\\App\\Routes\\$route";
                     if (class_exists($route_class)) {
                         $route_obj = new $route_class;
                         $this->addCollection($route_obj);
@@ -128,7 +128,7 @@ class RestApp extends \Phalcon\Mvc\Micro
                         continue;
                     }
                     $event = str_replace('.php', '', $event);
-                    $event_class = "\\App\\Event\\$event";
+                    $event_class = "\\App\\Events\\$event";
                     if (class_exists($event_class)) {
                         $event_obj = new $event_class;
                         $this->addEvent($event_obj);
