@@ -38,6 +38,7 @@ class Core
     public const UNI_CHANNEL = 'universal_channel';
 
     private static \Phalcon\Di $di;
+    private static \parallel\Channel $channel;
     private static RestApp $rest_full_app;
     private static AsyncTask $async_task;
 
