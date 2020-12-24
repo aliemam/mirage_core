@@ -56,7 +56,7 @@ class Logger implements LoggerInterface
      * This value should be set anytime that a new request came
      * @var string
      */
-    private string $tracker = 'NT';
+    private string $tracker;
 
     /**
      * @var string each logger has name that can be identified by that name
@@ -101,7 +101,7 @@ class Logger implements LoggerInterface
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             $this->logger->setLogLevel($logger_config['level'] ?? PhalconLogger::DEBUG);
 
-            $tracker = $this->tracker;
+            $tracker = $this->tracker ?? microtime();
             $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
             $this->prefix = "[$tracker][$tag][$ip][$route]";
@@ -317,7 +317,6 @@ class Logger implements LoggerInterface
         if (defined('CONFIG_DIR') && file_exists(CONFIG_DIR . '/logger.php')) {
             $loggers = require CONFIG_DIR . '/logger.php';
             $loggers = array_reverse($loggers);
-            self::$tracker = microtime();
             foreach ($loggers as $logger_name => $logger_config) {
                 self::$default_logger_name = $logger_name;
                 self::$default_logger_config = $logger_config;
