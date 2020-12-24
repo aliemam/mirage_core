@@ -68,13 +68,13 @@ class Auth
     }
 
     /**
-     * @param array $payload This is payload body of jwt token.
+     * @param stdClass $payload This is payload body of jwt token.
      * @param string $hash_key
      * @return string|null
      * @throws ErrorException
      * @throws HttpException
      */
-    public static function generateToken(array $payload, string $hash_key): ?string
+    public static function generateToken(stdClass $payload, string $hash_key): ?string
     {
         if (!isset($hash_key)) {
             self::error(
