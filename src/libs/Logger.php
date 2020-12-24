@@ -59,6 +59,12 @@ class Logger implements LoggerInterface
     private string $tracker;
 
     /**
+     * This value should be set anytime that a new request came
+     * @var string
+     */
+    private string $tag;
+
+    /**
      * @var string each logger has name that can be identified by that name
      */
     private string $logger_name;
@@ -89,10 +95,13 @@ class Logger implements LoggerInterface
         $this->logger_config = $logger_config;
         try {
             $path = $logger_config['path'] ?? LOG_DIR;
-            
-            $tag = $logger_config['tag'] ?? 'NT';
+            $this->tag = $logger_config['tag'] ?? 'NT';
+            $this->tracker = $logger_config['tracker'] ?? (string)microtime();
+            $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
+            $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
+            $this->prefix = "[$ip][$route]";
+
             $path .= '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
-            
             $fp = fopen($path, 'a+');
             fclose($fp);
             @chmod($path, 0777);
@@ -100,11 +109,6 @@ class Logger implements LoggerInterface
             $adapter = new Stream($path);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             $this->logger->setLogLevel($logger_config['level'] ?? PhalconLogger::DEBUG);
-
-            $tracker = $this->tracker ?? microtime();
-            $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
-            $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
-            $this->prefix = "[$tracker][$tag][$ip][$route]";
         } catch (Exception $e) {
             throw new ErrorException('Cant create Logger: ' . $logger_name . ' :' . $e->getMessage());
         }
@@ -147,11 +151,11 @@ class Logger implements LoggerInterface
      */
     private function shortMsg($msg): string
     {
-        if (!isset($this->logger_config['max_length'])) {
-            return $msg;
-        } else {
-            return substr($msg, 0, $this->logger_config['max_length']);
+        if (isset($this->logger_config['max_length'])) {
+            $msg = substr($msg, 0, $this->logger_config['max_length']);
         }
+
+        return "[{$this->tracker}][{$this->tag}]{$this->prefix}{$msg}";
     }
 
     /**
@@ -193,12 +197,37 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * @param string $tracker
+     * @param string|null $tracker
      * @return void
      */
-    public function setLoggerTracker(string $tracker): void
+    public function setLoggerTracker(?string $tracker = null): void
     {
-        $this->tracker = $tracker;
+        $this->tracker = $tracker ?? $this->tracker;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoggerTracker(): string
+    {
+        return $this->tracker;
+    }
+
+    /**
+     * @param string|null $tag
+     * @return void
+     */
+    public function setLoggerTag(?string $tag = null): void
+    {
+        $this->tag = $tag ?? $this->tracker;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoggerTag(): string
+    {
+        return $this->tag;
     }
 
     /**
@@ -207,7 +236,7 @@ class Logger implements LoggerInterface
      */
     public function emergency($msg, array $arr = []): void
     {
-        $this->logger->emergency($this->shortMsg($this->prefix . $msg));
+        $this->logger->emergency($this->shortMsg($msg));
     }
 
     /**
@@ -216,7 +245,7 @@ class Logger implements LoggerInterface
      */
     public function alert($msg, array $arr = []): void
     {
-        $this->logger->alert($this->shortMsg($this->prefix . $msg));
+        $this->logger->alert($this->shortMsg($msg));
     }
 
     /**
@@ -225,7 +254,7 @@ class Logger implements LoggerInterface
      */
     public function critical($msg, array $arr = []): void
     {
-        $this->logger->critical($this->shortMsg($this->prefix . $msg));
+        $this->logger->critical($this->shortMsg($msg));
     }
 
     /**
@@ -234,7 +263,7 @@ class Logger implements LoggerInterface
      */
     public function error($msg, array $arr = []): void
     {
-        $this->logger->error($this->shortMsg($this->prefix . $msg));
+        $this->logger->error($this->shortMsg($msg));
     }
 
     /**
@@ -243,7 +272,7 @@ class Logger implements LoggerInterface
      */
     public function warning($msg, array $arr = []): void
     {
-        $this->logger->warning($this->shortMsg($this->prefix . $msg));
+        $this->logger->warning($this->shortMsg($msg));
     }
 
     /**
@@ -252,7 +281,7 @@ class Logger implements LoggerInterface
      */
     public function notice($msg, array $arr = []): void
     {
-        $this->logger->notice($this->shortMsg($this->prefix . $msg));
+        $this->logger->notice($this->shortMsg($msg));
     }
 
     /**
@@ -261,7 +290,7 @@ class Logger implements LoggerInterface
      */
     public function info($msg, array $arr = []): void
     {
-        $this->logger->info($this->shortMsg($this->prefix . $msg));
+        $this->logger->info($this->shortMsg($msg));
     }
 
     /**
@@ -270,7 +299,7 @@ class Logger implements LoggerInterface
      */
     public function debug($msg, array $arr = []): void
     {
-        $this->logger->debug($this->shortMsg($this->prefix . $msg));
+        $this->logger->debug($this->shortMsg($msg));
     }
 
     /**
