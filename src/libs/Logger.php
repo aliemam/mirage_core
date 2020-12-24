@@ -94,19 +94,27 @@ class Logger implements LoggerInterface
         $this->logger_name = $logger_name;
         $this->logger_config = $logger_config;
         try {
-            $path = $logger_config['path'] ?? LOG_DIR;
+            $this->tracker = $logger_config['tracker'] ?? 'TT';
             $this->tag = $logger_config['tag'] ?? 'NT';
-            $this->tracker = $logger_config['tracker'] ?? (string)microtime();
             $ip = Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
-            $this->prefix = "[$ip][$route]";
+            $this->prefix = "[$ip][$route] ";
+            if($logger_config['type'] == 'json') {
+                $formatter = new \Phalcon\Logger\Formatter\Json('Y-m-d H:i:s');
+            } else {
+                $formatter = new \Phalcon\Logger\Formatter\Line('[%date%][%type%]%message%');
+                $formatter->setDateFormat('Y-m-d H:i:s');
+            }
 
-            $path .= '/' . $logger_name . '_' . date('Y-m-d', time()) . '.log';
-            $fp = fopen($path, 'a+');
-            fclose($fp);
-            @chmod($path, 0777);
+            $path = $logger_config['path'] ?? 'file://'.LOG_DIR.'/api.log';
+            if(substr($path,0,4) === 'file') {
+                $fp = fopen($path, 'a+');
+                fclose($fp);
+                @chmod($path, 0777);
+            }
 
             $adapter = new Stream($path);
+            $adapter->setFormatter($formatter);
             $this->logger = new PhalconLogger('message', ['main' => $adapter]);
             $this->logger->setLogLevel($logger_config['level'] ?? PhalconLogger::DEBUG);
         } catch (Exception $e) {
