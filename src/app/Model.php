@@ -72,6 +72,15 @@ class Model extends PhalconModel implements \JsonSerializable
     }
 
     /**
+     * This will calls before function beforeSave to validate all variables
+     *
+     * @return void
+     */
+    public function beforeValidation(): void
+    {
+    }
+
+    /**
      * This will calls before saving the model. $model->save();
      *
      * @return void
