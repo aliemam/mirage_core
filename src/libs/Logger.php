@@ -97,7 +97,7 @@ class Logger implements LoggerInterface
             $path = $logger_config['path'] ?? LOG_DIR;
             $this->tag = $logger_config['tag'] ?? 'NT';
             $this->tracker = $logger_config['tracker'] ?? (string)microtime();
-            $ip = php_sapi_name() != "cli" ? 'cli_mode' : Helper::getIP();
+            $ip = Helper::getIP();
             $route = $_SERVER['REQUEST_URI'] ?? 'not_http_request';
             $this->prefix = "[$ip][$route]";
 
