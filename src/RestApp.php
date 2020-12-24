@@ -220,10 +220,10 @@ class RestApp extends \Phalcon\Mvc\Micro
      */
     public function run(): void
     {
-        L::i('[Request START] ' . json_encode($this->request->getQuery()));
-        L::i('[Request HEADERS] ' . json_encode(Helper::getHeaders()));
-        L::i('[Request BODY] ' . json_encode($this->request->getRawBody(true)));
-        L::i('[Request POST] ' . json_encode($this->request->getPost()));
+        L::i('Request START: ' . json_encode($this->request->getQuery()));
+        L::i('Request HEADERS: ' . json_encode(Helper::getHeaders()));
+        L::i('Request BODY: ' . json_encode($this->request->getRawBody(true)));
+        L::i('Request POST: ' . json_encode($this->request->getPost()));
         
         if ($this->request->isOptions()) {
             $this->response->createOptionResponseHeaders();
