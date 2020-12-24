@@ -32,8 +32,8 @@ use Phalcon\Mvc\Model as PhalconModel;
 
 class Model extends PhalconModel implements \JsonSerializable
 {
-    public int $created_at;
-    public int $updated_at;
+    public ?int $created_at = null;
+    public ?int $updated_at = null;
     private bool $force_terminated = false;
 
     /**

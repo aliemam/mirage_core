@@ -26,6 +26,7 @@ namespace Mirage\Http;
 
 use App\Constants\Err;
 use App\Constants\Services;
+use ErrorException;
 use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Mirage\Libs\Route;
@@ -46,6 +47,8 @@ final class Request extends \Phalcon\Http\Request
      *
      * @param array $params
      * @return array
+     * @throws HttpException
+     * @throws ErrorException
      */
     public static function getData(array $params = []): array
     {
@@ -64,7 +67,7 @@ final class Request extends \Phalcon\Http\Request
                 $name = substr($param, 1);
             }
 
-            L::d("checking $name, value: " . $data->$name ?? null);
+//            L::d("checking $name, value: " . $data->$name ?? null);
             if ((!isset($data->$name) || $data->$name == '') && $req) {
                 throw new HttpException(Err::REQUEST_MISS_PARAM, "param $name should be specified");
             }
