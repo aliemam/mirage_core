@@ -234,10 +234,6 @@ class RestApp extends \Phalcon\Mvc\Micro
         };
 
         $this->before(function () {
-            if (Config::get('app.env') === 'dev') {
-                L::d('BYPASS MIDDLEWARE (IN DEV MODE)');
-                return;
-            }
             $route = Request::getRoute();
             foreach ($route->getMiddlewares() as $middleware){
                 $middleware->check();
