@@ -172,4 +172,9 @@ class Model extends PhalconModel implements \JsonSerializable
 
         return $std;
     }
+
+    public function jsonSerialize()
+    {
+        // TODO: Implement jsonSerialize() method.
+    }
 }
