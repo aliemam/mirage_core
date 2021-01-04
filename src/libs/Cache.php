@@ -192,7 +192,7 @@ class Cache implements CacheItemPoolInterface
         $now = time();
         L::d("Adding to cache...");
         L::d("Key: $key");
-        L::d("Value: $value");
+//        L::d("Value(json_encoded to show): " . json_encode($value));
         L::d("Adding time: " . $now);
         L::d("Second to expire: $expiration");
         $data = new \stdClass();
