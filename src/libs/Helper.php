@@ -40,7 +40,7 @@ class Helper
      */
     public static function getUniqueId(...$params): string
     {
-        return (string)crc32(str_replace(['{', '}', '[', ']'], ['', '', '', ''], implode(':', $params)));
+        return (string)crc32(str_replace(['{', '}', '[', ']'], ['', '', '', ''], json_encode($params)));
     }
 
     /**
