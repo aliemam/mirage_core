@@ -30,7 +30,7 @@ use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Phalcon\Mvc\Model as PhalconModel;
 
-class Model extends PhalconModel implements \JsonSerializable
+class Model extends PhalconModel
 {
     public ?int $created_at = null;
     public ?int $updated_at = null;
@@ -64,7 +64,7 @@ class Model extends PhalconModel implements \JsonSerializable
     /**
      * Before validating model on updating, this function sets update_at column.
      *
-     * @return void
+     * @return void$languages_dir
      */
     public function beforeValidationOnUpdate(): void
     {
@@ -171,10 +171,5 @@ class Model extends PhalconModel implements \JsonSerializable
         }
 
         return $std;
-    }
-
-    public function jsonSerialize()
-    {
-        // TODO: Implement jsonSerialize() method.
     }
 }
