@@ -191,12 +191,6 @@ class Core
             }
             define('DATABASE_DIR', MIRAGE_APP_DIR . '/database');
         }
-        if (!defined('JOB_DIR')) {
-            if (!is_readable(MIRAGE_APP_DIR . '/job')) {
-                throw new ErrorException('[ERROR][100] Unable to define JOB_DIR');
-            }
-            define('JOB_DIR', MIRAGE_APP_DIR . '/job');
-        }
         if (!defined('LANG_DIR')) {
             if (!is_readable(MIRAGE_APP_DIR . '/lang')) {
                 throw new ErrorException('[ERROR][100] Unable to define LANG_DIR');
