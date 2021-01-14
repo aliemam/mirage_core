@@ -2,6 +2,8 @@
 
 namespace Mirage\Libs;
 
+use Mirage\App\Job;
+
 class Pipeline
 {
     /** @var mixed data to used in all jobs */
