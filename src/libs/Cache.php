@@ -203,7 +203,7 @@ class Cache implements CacheItemPoolInterface
     }
     public static function add(string $key, $value, int $expiration = 31536000): void
     {
-        self::getInstance()->add($key, $value, $expiration);
+        self::getInstance()->addData($key, $value, $expiration);
     }
 
     /**
@@ -227,9 +227,9 @@ class Cache implements CacheItemPoolInterface
 
         return $data->data;
     }
-    public static function g(string $key)
+    public static function get(string $key)
     {
-        return self::getInstance()->get($key);
+        return self::getInstance()->getData($key);
     }
 
     /**
@@ -258,9 +258,9 @@ class Cache implements CacheItemPoolInterface
 
         return $results;
     }
-    public static function gbp(string $patter): array
+    public static function getByPattern(string $patter): array
     {
-        return self::getInstance()->getByPattern($patter);
+        return self::getInstance()->getDataByPattern($patter);
     }
 
     /**
@@ -282,9 +282,9 @@ class Cache implements CacheItemPoolInterface
 
         return $bool;
     }
-    public static function d(string $key): bool
+    public static function delete(string $key): bool
     {
-        return self::getInstance()->delete($key);
+        return self::getInstance()->deleteData($key);
     }
 
     /**
@@ -314,9 +314,9 @@ class Cache implements CacheItemPoolInterface
 
         return $results;
     }
-    public static function dbp(string $patter): bool
+    public static function deleteByPattern(string $patter): bool
     {
-        return self::getInstance()->deleteByPattern($patter);
+        return self::getInstance()->deleteDataByPattern($patter);
     }
 
     /**
