@@ -46,7 +46,7 @@ class RestApp extends \Phalcon\Mvc\Micro
     private array $collections = [];
     private array $events = [];
 
-    public function __construct(\Phalcon\Di $di)
+    public function __construct(\Phalcon\Di\DiInterface $di)
     {
         parent::__construct();
 

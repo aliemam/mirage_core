@@ -135,6 +135,16 @@ class Queue
             return $beanstalk->put($data, $priority, $delay, $ttr);
         });
     }
+    public static function add(
+        string $tube_name,
+        string $data,
+        int $priority = Pheanstalk::DEFAULT_PRIORITY,
+        int $delay = Pheanstalk::DEFAULT_DELAY,
+        int $ttr = Pheanstalk::DEFAULT_TTR
+    )
+    {
+        self::getInstance()->addDataToTube($tube_name, $data, $priority, $delay, $ttr);
+    }
 
     /**
      * This function boot all beanstalk configs in the startup

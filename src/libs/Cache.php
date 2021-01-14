@@ -183,7 +183,7 @@ class Cache implements CacheItemPoolInterface
      * @return bool
      * @throws ErrorException|InvalidArgumentException
      */
-    public function add(string $key, $value, int $expiration = 31536000): bool
+    public function addData(string $key, $value, int $expiration = 31536000): bool
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not add!!!");
@@ -201,13 +201,17 @@ class Cache implements CacheItemPoolInterface
         $data->ttl = $expiration;
         return $this->cache->set($key, $data, $expiration);
     }
+    public static function add(string $key, $value, int $expiration = 31536000): void
+    {
+        self::getInstance()->add($key, $value, $expiration);
+    }
 
     /**
      * @param string $key The key of data stored in memory
      * @return null|mixed
      * @throws ErrorException|InvalidArgumentException
      */
-    public function get(string $key)
+    public function getData(string $key)
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
@@ -223,6 +227,10 @@ class Cache implements CacheItemPoolInterface
 
         return $data->data;
     }
+    public static function g(string $key)
+    {
+        return self::getInstance()->get($key);
+    }
 
     /**
      * This function gets pattern that could be part of any key in memory.
@@ -230,7 +238,7 @@ class Cache implements CacheItemPoolInterface
      * @return array
      * @throws ErrorException
      */
-    public function getByPattern(string $pattern): array
+    public function getDataByPattern(string $pattern): array
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
@@ -250,13 +258,17 @@ class Cache implements CacheItemPoolInterface
 
         return $results;
     }
+    public static function gbp(string $patter): array
+    {
+        return self::getInstance()->getByPattern($patter);
+    }
 
     /**
      * @param string $key The key of data stored in memory
      * @return bool
      * @throws ErrorException|InvalidArgumentException
      */
-    public function delete(string $key): bool
+    public function deleteData(string $key): bool
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
@@ -270,6 +282,10 @@ class Cache implements CacheItemPoolInterface
 
         return $bool;
     }
+    public static function d(string $key): bool
+    {
+        return self::getInstance()->delete($key);
+    }
 
     /**
      * This function deletes pattern that could be part of any key in memory.
@@ -277,7 +293,7 @@ class Cache implements CacheItemPoolInterface
      * @return bool
      * @throws ErrorException
      */
-    public function deleteByPattern(string $pattern): bool
+    public function deleteDataByPattern(string $pattern): bool
     {
         if (isset($this->cache_config['enable']) && $this->cache_config['enable'] === false) {
             L::w("Cache is disable but you trying to, can not get!!!");
@@ -297,6 +313,10 @@ class Cache implements CacheItemPoolInterface
         }
 
         return $results;
+    }
+    public static function dbp(string $patter): bool
+    {
+        return self::getInstance()->deleteByPattern($patter);
     }
 
     /**
@@ -320,7 +340,7 @@ class Cache implements CacheItemPoolInterface
 
     public function getItem($key)
     {
-        return $this->get($key);
+        return $this->getData($key);
     }
 
     public function getItems(array $keys = array())
@@ -355,7 +375,7 @@ class Cache implements CacheItemPoolInterface
 
     public function save(CacheItemInterface $item)
     {
-        return $this->add($item->getKey(), $item);
+        return $this->addData($item->getKey(), $item);
     }
 
     public function saveDeferred(CacheItemInterface $item)

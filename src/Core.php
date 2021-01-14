@@ -38,9 +38,7 @@ class Core
     public const UNI_CHANNEL = 'universal_channel';
 
     private static \Phalcon\Di $di;
-    private static \parallel\Channel $channel;
     private static RestApp $rest_full_app;
-    private static AsyncTask $async_task;
 
     private function __construct()
     {
@@ -340,16 +338,6 @@ class Core
     }
 
     /**
-     * Register Universal channel for all threads
-     */
-    private static function registerUniversalChannel(): void
-    {
-        if(extension_loaded('parallel')) {
-            self::$channel = \parallel\Channel::make(self::UNI_CHANNEL, \parallel\Channel::Infinite);
-        }
-    }
-
-    /**
      * Mirage booting function
      * Brings up all needed components and register all needed namespaces.
      *
@@ -364,7 +352,6 @@ class Core
         self::bootMirageFrameworkErrorHandlers();
         self::defineMirageAppEnvironmentVariables();
         self::registerMirageNamespace();
-//        self::registerUniversalChannel();
     }
 
     /**
@@ -382,14 +369,5 @@ class Core
             });
         }
         return \Phalcon\Di::getDefault()->getShared(Services::MICRO);
-    }
-
-    public static function getAsyncTask(): AsyncTask
-    {
-        if (!isset(self::$async_task)) {
-            self::$async_task = new AsyncTask();
-        }
-
-        return self::$async_task;
     }
 }

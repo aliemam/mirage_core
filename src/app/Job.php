@@ -24,25 +24,18 @@
 
 namespace Mirage\App;
 
-class Job extends \Threaded
+use Closure;
+
+/**
+ * Abstract Class Job
+ * This class handles all access control operation.
+ * @package Mirage\Libs
+ */
+abstract class Job
 {
+    abstract public function task($data): array;
 
-    protected $tasks;
-    protected $tasks_result;
-
-    public function __construct($tasks)
-    {
-        $this->tasks = $tasks;
-        $this->tasks_result = [];
-    }
-
-    public static function generateInputs($params)
-    {
-    }
-    public function handleOutputs(...$param)
-    {
-    }
-    public function doTask()
-    {
+    public function getTaskClosure() {
+        return Closure::fromCallable([$this, 'task']);
     }
 }
