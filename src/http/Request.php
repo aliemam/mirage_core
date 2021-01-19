@@ -28,10 +28,12 @@ use App\Constants\Err;
 use App\Constants\Services;
 use ErrorException;
 use Mirage\Exceptions\HttpException;
+use Mirage\Libs\Helper;
 use Mirage\Libs\L;
 use Mirage\Libs\Route;
 use Phalcon\Di;
 use Phalcon\Mvc\Router\RouteInterface;
+use stdClass;
 
 /**
  * Class Request
@@ -39,7 +41,6 @@ use Phalcon\Mvc\Router\RouteInterface;
  * TODO: Not Completed
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
-
 final class Request extends \Phalcon\Http\Request
 {
     /**
@@ -52,10 +53,10 @@ final class Request extends \Phalcon\Http\Request
      */
     public static function getData(array $params = []): array
     {
-        $data1 = (array) ((new self)->getJsonRawBody() ?? []);
-        $data2 = (array) ((new self)->get() ?? []);
+        $data1 = (array)((new self)->getJsonRawBody() ?? []);
+        $data2 = (array)((new self)->get() ?? []);
 
-        $data = (object) array_merge((array) $data1, (array) $data2);
+        $data = (object)array_merge((array)$data1, (array)$data2);
         L::d("Request All Data: " . json_encode($data));
 
         $returned_params = [];
@@ -98,5 +99,23 @@ final class Request extends \Phalcon\Http\Request
         $route_id = $route_ids[1];
 
         return $collection[$collection_id]->getRoutes()[$route_id];
+    }
+
+    /**
+     * Getting all the info around the incoming request
+     *
+     * @return stdClass
+     */
+    public static function getRequestInfo(): stdClass
+    {
+        $request = new self;
+        $request_info = new stdClass();
+        $request_info->url = $request->getURI(true);
+        $request_info->header = (array)($request->getHeaders() ?? []);
+        $request_info->body = (array)($request->getJsonRawBody() ?? []);
+        $request_info->query = (array)($request->getQuery() ?? []);
+        $request_info->post = (array)($request->getPost() ?? []);
+
+        return $request_info;
     }
 }

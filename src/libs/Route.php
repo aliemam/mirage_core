@@ -153,9 +153,10 @@ class Route
     /**
      * Set the Route Collection Id
      *
-     * @return string
+     * @param string $collection_id
+     * @return void
      */
-    public function setCollectionId($collection_id): void
+    public function setCollectionId(string $collection_id): void
     {
         $this->collection_id = $collection_id;
     }
