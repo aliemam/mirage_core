@@ -31,7 +31,6 @@
     "phan/phan": "^3.2",
     "enqueue/redis": "^0.10.4",
     "ext-redis": "*",
-    "enqueue/amqp-ext": "^0.10.4",
     "psr/cache": "^1.0",
     "pda/pheanstalk": "^4.0"
   },
