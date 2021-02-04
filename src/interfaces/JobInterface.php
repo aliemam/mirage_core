@@ -22,24 +22,14 @@
  * @author Ali Emamhadi <aliemamhadi@gmail.com>
  */
 
-namespace Mirage\App;
-
-use Closure;
-use Mirage\Interfaces\JobInterface;
+namespace Mirage\Interfaces;
 
 /**
- * Abstract Class Job
- * This class handles all access control operation.
- * @package Mirage\Libs
+ * Class Auth
+ * @package Mirage
  */
-class Job implements JobInterface
+interface JobInterface
 {
-    public function taskToRunInParallel(): Closure
-    {
-        return Closure::fromCallable([$this, 'task']);
-    }
-
-    public function task($data): array
-    {
-    }
+    public function taskToRunInParallel(): \Closure;
+    public function task($data): array;
 }
