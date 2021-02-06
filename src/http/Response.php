@@ -194,13 +194,8 @@ final class Response extends \Phalcon\Http\Response
 
     public function sendResponse(): void
     {
-        // logging everythings
-        if (Config::get('app.log_mode') == 'complete') {
-            $out_put_log = json_encode($this->output);
-        } else {
-            $out_put_log = substr(json_encode($this->output), 0, 500);
-        }
-
+        // logging every things
+        $out_put_log = json_encode($this->output);
         $log = "Response Info: status:$this->http_code | dev_code:$this->dev_code | dev_message:$this->dev_message";
         $log_response = "Response Output: $out_put_log";
         if ($this->has_error) {
