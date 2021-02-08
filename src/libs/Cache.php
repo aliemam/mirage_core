@@ -103,17 +103,7 @@ class Cache implements CacheItemPoolInterface
             $cache_factory = new CacheFactory($adapter_factory);
             $this->cache = $cache_factory->load([
                 'adapter' => $cache_config['adapter'],
-                'options' => [
-                    'adapter' => 'redis',
-                    'serializer' => 'json',
-                    'lifetime' => 31536000,
-                    'prefix' => '_mirage_',
-                    'host' => '127.0.0.1',
-                    'port' => 6379,
-                    'index' => 1,
-                    'persistent' => TRUE,
-                    'enable' => TRUE
-                ]
+                'options' => $cache_config
             ]);
             $this->cache_name = $cache_name;
             $this->cache_config = $cache_config;
