@@ -90,12 +90,12 @@ class Cache implements CacheItemPoolInterface
             ) {
                 $cache_config['serializer'] = 'none';
             }
-            $cache_config['defaultSerializer'] = ucfirst($cache_config['serializer']);
+            $defaultSerializer = ucfirst($cache_config['serializer']);
             $cache_config['prefix'] = $cache_name . $cache_config['prefix'];
             $adapter_factory = new AdapterFactory(
                 new SerializerFactory(),
                 [
-                    'defaultSerializer' => $cache_config['defaultSerializer'],
+                    'defaultSerializer' => $defaultSerializer,
                     'lifetime' => $cache_config['lifetime'] ?? 31536000
 
                 ]
