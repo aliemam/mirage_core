@@ -91,7 +91,7 @@ class Cache implements CacheItemPoolInterface
                 $cache_config['serializer'] = 'none';
             }
             $defaultSerializer = ucfirst($cache_config['serializer']);
-//            $cache_config['prefix'] = $cache_name . $cache_config['prefix'];
+            $cache_config['prefix'] = $cache_name . $cache_config['prefix'];
             $adapter_factory = new AdapterFactory(
                 new SerializerFactory(),
                 [
@@ -103,10 +103,11 @@ class Cache implements CacheItemPoolInterface
             $cache_factory = new CacheFactory($adapter_factory);
             $this->cache = $cache_factory->load([
                 'adapter' => $cache_config['adapter'],
-                'options' => $cache_config
+                'options' => [
+                    'prefix' => $cache_config['prefix'],
+                    'host' => $cache_config['host']
+                ]
             ]);
-            L::d("CAHCAAAAAAAA:" . json_encode($cache_config));
-
             $this->cache_name = $cache_name;
             $this->cache_config = $cache_config;
         } catch (\Exception $e) {
