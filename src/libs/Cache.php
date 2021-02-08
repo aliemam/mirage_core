@@ -103,11 +103,10 @@ class Cache implements CacheItemPoolInterface
             $cache_factory = new CacheFactory($adapter_factory);
             $this->cache = $cache_factory->load([
                 'adapter' => $cache_config['adapter'],
-                'options' => [
-                    'prefix' => 'myprefix'
-                ]
+                'options' => $cache_config
             ]);
             L::d("CAHCAAAAAAAA:" . json_encode($cache_config));
+
             $this->cache_name = $cache_name;
             $this->cache_config = $cache_config;
         } catch (\Exception $e) {
