@@ -108,7 +108,7 @@ class Cache implements CacheItemPoolInterface
                     'serializer' => 'json',
                     'lifetime' => 31536000,
                     'prefix' => '_mirage_',
-                    'host' => '127.0.',
+                    'host' => '127.0.0.1',
                     'port' => 6379,
                     'index' => 1,
                     'persistent' => TRUE,
