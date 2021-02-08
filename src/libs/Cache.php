@@ -25,6 +25,7 @@
 namespace Mirage\Libs;
 
 use ErrorException;
+use Mirage\Exceptions\CacheException;
 use Phalcon\Cache\CacheFactory;
 use Phalcon\Cache\AdapterFactory;
 use Phalcon\Storage\SerializerFactory;
@@ -201,9 +202,12 @@ class Cache implements CacheItemPoolInterface
         $data->ttl = $expiration;
         return $this->cache->set($key, $data, $expiration);
     }
-    public static function add(string $key, $value, int $expiration = 31536000): void
+    public static function add(string $cache_name, string $key, $value, int $expiration = 31536000): void
     {
-        self::getInstance()->addData($key, $value, $expiration);
+        if(!isset(self::$caches[$cache_name])) {
+            throw new CacheException("There is no cache name: $cache_name");
+        }
+        self::$caches[$cache_name]->addData($key, $value, $expiration);
     }
 
     /**
@@ -227,9 +231,12 @@ class Cache implements CacheItemPoolInterface
 
         return $data->data;
     }
-    public static function get(string $key)
+    public static function get(string $cache_name, string $key)
     {
-        return self::getInstance()->getData($key);
+        if(!isset(self::$caches[$cache_name])) {
+            throw new CacheException("There is no cache name: $cache_name");
+        }
+        return self::$caches[$cache_name]->getData($key);
     }
 
     /**
@@ -258,9 +265,12 @@ class Cache implements CacheItemPoolInterface
 
         return $results;
     }
-    public static function getByPattern(string $patter): array
+    public static function getByPattern(string $cache_name, string $patter): array
     {
-        return self::getInstance()->getDataByPattern($patter);
+        if(!isset(self::$caches[$cache_name])) {
+            throw new CacheException("There is no cache name: $cache_name");
+        }
+        return self::$caches[$cache_name]->getDataByPattern($patter);
     }
 
     /**
@@ -282,9 +292,12 @@ class Cache implements CacheItemPoolInterface
 
         return $bool;
     }
-    public static function delete(string $key): bool
+    public static function delete(string $cache_name, string $key): bool
     {
-        return self::getInstance()->deleteData($key);
+        if(!isset(self::$caches[$cache_name])) {
+            throw new CacheException("There is no cache name: $cache_name");
+        }
+        return self::$caches[$cache_name]->deleteData($key);
     }
 
     /**
@@ -314,9 +327,12 @@ class Cache implements CacheItemPoolInterface
 
         return $results;
     }
-    public static function deleteByPattern(string $patter): bool
+    public static function deleteByPattern(string $cache_name, string $patter): bool
     {
-        return self::getInstance()->deleteDataByPattern($patter);
+        if(!isset(self::$caches[$cache_name])) {
+            throw new CacheException("There is no cache name: $cache_name");
+        }
+        return self::$caches[$cache_name]->deleteDataByPattern($patter);
     }
 
     /**
