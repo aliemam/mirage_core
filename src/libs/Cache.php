@@ -100,7 +100,6 @@ class Cache implements CacheItemPoolInterface
 
                 ]
             );
-            unset($cache_config['defaultSerializer']);
             $cache_factory = new CacheFactory($adapter_factory);
             $this->cache = $cache_factory->load([
                 'adapter' => $cache_config['adapter'],
