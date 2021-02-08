@@ -77,8 +77,6 @@ class Cache implements CacheItemPoolInterface
      */
     private function __construct(string $cache_name, array $cache_config)
     {
-        $this->cache_name = $cache_name;
-        $this->cache_config = $cache_config;
         try {
             if (!isset($cache_config['adapter']) ||
                 !in_array($cache_config['adapter'], ['redis', 'memcached', 'memory'])) {
@@ -93,6 +91,7 @@ class Cache implements CacheItemPoolInterface
                 $cache_config['serializer'] = 'none';
             }
             $cache_config['defaultSerializer'] = ucfirst($cache_config['serializer']);
+            $cache_config['prefix'] = $cache_name . $cache_config['prefix'];
             $adapter_factory = new AdapterFactory(
                 new SerializerFactory(),
                 [
@@ -101,14 +100,14 @@ class Cache implements CacheItemPoolInterface
 
                 ]
             );
+            unset($cache_config['defaultSerializer']);
             $cache_factory = new CacheFactory($adapter_factory);
-            $cache_config['prefix'] .= $cache_name;
             $this->cache = $cache_factory->load([
                 'adapter' => $cache_config['adapter'],
-                'options' => [
-                    'prefix' => 'my-prefix',
-                ]
+                'options' => $cache_config
             ]);
+            $this->cache_name = $cache_name;
+            $this->cache_config = $cache_config;
         } catch (\Exception $e) {
             throw new ErrorException('Cant create Cache: ' . $cache_name . ' :' . $e->getMessage());
         }
