@@ -107,6 +107,7 @@ class Cache implements CacheItemPoolInterface
                     'prefix' => 'myprefix'
                 ]
             ]);
+            L::d("CAHCAAAAAAAA:" . json_encode($cache_config));
             $this->cache_name = $cache_name;
             $this->cache_config = $cache_config;
         } catch (\Exception $e) {
