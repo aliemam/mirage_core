@@ -93,20 +93,19 @@ class Cache implements CacheItemPoolInterface
                 $cache_config['serializer'] = 'none';
             }
             $cache_config['defaultSerializer'] = ucfirst($cache_config['serializer']);
+            $cache_config['prefix'] .= $cache_name;
+
             $adapter_factory = new AdapterFactory(
                 new SerializerFactory(),
                 [
                     'defaultSerializer' => $cache_config['defaultSerializer'],
-                    'lifetime' => $cache_config['lifetime'] ?? 31536000
+                    'lifetime' => $cache_config['lifetime'] ?? 31536000,
+                    'prefix' => $cache_config['prefix']
 
-                ]
+                ],
             );
             $cache_factory = new CacheFactory($adapter_factory);
-            $cache_config['prefix'] .= $cache_name;
-            $this->cache = $cache_factory->load([
-                'adapter' => $cache_config['adapter'],
-                'options' => $cache_config
-            ]);
+            $this->cache = $cache_factory->load($cache_config);
         } catch (\Exception $e) {
             throw new ErrorException('Cant create Cache: ' . $cache_name . ' :' . $e->getMessage());
         }
