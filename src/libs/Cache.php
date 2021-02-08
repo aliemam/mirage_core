@@ -103,7 +103,10 @@ class Cache implements CacheItemPoolInterface
             );
             $cache_factory = new CacheFactory($adapter_factory);
             $cache_config['prefix'] .= $cache_name;
-            $this->cache = $cache_factory->load($cache_config);
+            $this->cache = $cache_factory->load([
+                'adapter' => $cache_config['adapter'],
+                'options' => $cache_config
+            ]);
         } catch (\Exception $e) {
             throw new ErrorException('Cant create Cache: ' . $cache_name . ' :' . $e->getMessage());
         }
