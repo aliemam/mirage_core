@@ -79,12 +79,12 @@ class Acl
     {
         $instance = self::getInstance();
         $cache_id = Helper::getUniqueId('mirage', 'acl');
-        $acl = Cache::get($cache_id);
+        $acl = Cache::get('main', $cache_id);
         if (!isset($acl)) {
             if (is_file(STORAGE_DIR . '/acl.data')) {
                 L::d('acl is loading');
                 $instance->acl = unserialize(file_get_contents(STORAGE_DIR . '/acl.data'));
-                Cache::add($cache_id, serialize($instance->acl));
+                Cache::add('main', $cache_id, serialize($instance->acl));
                 return $instance;
             } else {
                 return null;
@@ -102,7 +102,7 @@ class Acl
     {
         $instance = self::getInstance();
         $cache_id = Helper::getUniqueId('mirage', 'acl');
-        Cache::add($cache_id, serialize($instance->acl));
+        Cache::add('main', $cache_id, serialize($instance->acl));
         file_put_contents(
             STORAGE_DIR . '/acl.data',
             serialize($instance->acl)
@@ -116,7 +116,7 @@ class Acl
     public static function remove(): void
     {
         $cache_id = Helper::getUniqueId('mirage', 'acl');
-        Cache::remove($cache_id);
+        Cache::remove('main', $cache_id);
     }
 
     /**

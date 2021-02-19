@@ -30,7 +30,7 @@ use Mirage\Exceptions\HttpException;
 use Mirage\Libs\L;
 use Phalcon\Mvc\Model as PhalconModel;
 
-class Model extends PhalconModel
+class Model extends PhalconModel implements \JsonSerializable
 {
     public ?int $created_at = null;
     public ?int $updated_at = null;
@@ -163,7 +163,11 @@ class Model extends PhalconModel
         ])->toArray();
     }
 
-    public function castToStd(){
+    /**
+     * @return \stdClass
+     */
+    public function castToStd()
+    {
         $variables = get_object_vars($this);
         $std = new \stdClass();
         foreach ($variables as $variable => $value) {
@@ -171,5 +175,28 @@ class Model extends PhalconModel
         }
 
         return $std;
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function jsonSerialize(): array
+    {
+        $reflection = new \ReflectionClass(get_called_class());
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        $result = get_object_vars($this);
+        $props = [];
+        foreach ($properties as $prop) {
+            $props[] = $prop->getName();
+        }
+        foreach ($result as $name => &$value) {
+            if (in_array($name, $props)) {
+                if (is_object($value) && method_exists($value, 'jsonSerialize')) {
+                    $value = json_encode($value);
+                }
+            } else unset($result[$name]);
+        }
+        return $result;
     }
 }
