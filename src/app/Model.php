@@ -190,13 +190,12 @@ class Model extends PhalconModel implements \JsonSerializable
         foreach ($properties as $prop) {
             $props[] = $prop->getName();
         }
-        foreach ($result as $name => &$value) {
+        $array = [];
+        foreach ($result as $name => $value) {
             if (in_array($name, $props)) {
-                if (is_object($value) && method_exists($value, 'jsonSerialize')) {
-                    $value = json_encode($value);
-                }
+                $array[$name] = $value;
             } else unset($result[$name]);
         }
-        return $result;
+        return $array;
     }
 }
