@@ -106,8 +106,13 @@ class Logger implements LoggerInterface
                 $formatter->setDateFormat('Y-m-d H:i:s');
             }
 
-            $path = $logger_config['path'] ?? 'file://'.LOG_DIR.'/mirage.log';
+            $path = $logger_config['path'] ?? 'file://'.LOG_DIR.'/mirage';
             if(substr($path,0,4) === 'file') {
+                if (substr($path, strlen($path) - 4) === '.log') {
+                    $path = substr($path,0,-4) . '_' . date('Y-m-d', time()) . '.log';
+                } else {
+                    $path .= '_' . date('Y-m-d', time()) . '.log';
+                }
                 $fp = fopen($path, 'a+');
                 fclose($fp);
                 @chmod($path, 0777);
