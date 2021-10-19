@@ -36,6 +36,8 @@ use Phalcon\Logger\Adapter\Stream;
  */
 class Logger implements LoggerInterface
 {
+    public static bool $enable = true;
+
     /**
      * @var array of Logger Objects that store here as Singleton Object
      */
@@ -249,7 +251,9 @@ class Logger implements LoggerInterface
      */
     public function emergency($msg, array $arr = []): void
     {
-        $this->logger->emergency($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->emergency($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -258,7 +262,9 @@ class Logger implements LoggerInterface
      */
     public function alert($msg, array $arr = []): void
     {
-        $this->logger->alert($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->alert($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -267,7 +273,9 @@ class Logger implements LoggerInterface
      */
     public function critical($msg, array $arr = []): void
     {
-        $this->logger->critical($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->critical($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -276,7 +284,9 @@ class Logger implements LoggerInterface
      */
     public function error($msg, array $arr = []): void
     {
-        $this->logger->error($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->error($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -285,7 +295,9 @@ class Logger implements LoggerInterface
      */
     public function warning($msg, array $arr = []): void
     {
-        $this->logger->warning($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->warning($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -294,7 +306,9 @@ class Logger implements LoggerInterface
      */
     public function notice($msg, array $arr = []): void
     {
-        $this->logger->notice($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->notice($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -303,7 +317,9 @@ class Logger implements LoggerInterface
      */
     public function info($msg, array $arr = []): void
     {
-        $this->logger->info($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->info($this->shortMsg($msg));
+        }
     }
 
     /**
@@ -312,7 +328,9 @@ class Logger implements LoggerInterface
      */
     public function debug($msg, array $arr = []): void
     {
-        $this->logger->debug($this->shortMsg($msg));
+        if (self::$enable) {
+            $this->logger->debug($this->shortMsg($msg));
+        }
     }
 
     /**
