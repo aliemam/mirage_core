@@ -230,20 +230,15 @@ class RestApp extends \Phalcon\Mvc\Micro
         };
 
         if ($logRequestInfo) {
-            L::i(
-                \sprintf(
-                    "New Request Starts:\nQuery: %s\nHeaders: %s\nBody: %s\nPost: %s\n",
-                    json_encode($this->request->getQuery()),
-                    json_encode(Helper::getHeaders()),
-                    json_encode($this->request->getRawBody(true)),
-                    json_encode($this->request->getPost())
-                )
-            );
+            L::i('Request START: ' . json_encode($this->request->getQuery()));
+            L::i('Request HEADERS: ' . json_encode(Helper::getHeaders()));
+            L::i('Request BODY: ' . json_encode($this->request->getRawBody(true)));
+            L::i('Request POST: ' . json_encode($this->request->getPost()));
         }
 
         $this->before(function () {
             $route = Request::getRoute();
-            foreach ($route->getMiddlewares() as $middleware) {
+            foreach ($route->getMiddlewares() as $middleware){
                 $middleware->check();
             }
         });
